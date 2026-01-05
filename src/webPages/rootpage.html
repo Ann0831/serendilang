@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Serendilang</title>
+    <link rel="icon" href="/favicon.png" type="image/png" />
+    <!-- TailwindCSS -->
+    <link href="/assets/css/tailwind.css" rel="stylesheet" />
+    <!-- Tabler Icons -->
+    <link rel="stylesheet" href="/assets/css/tabler-icons.min.css">
+    <style>
+      .footer-glass-gradient {
+        background: linear-gradient(
+          to top,
+          rgba(255, 255, 255, 0.85),
+          rgba(224, 231, 255, 0.45)
+        );
+      }
+    </style>
+  </head>
+  <body class="bg-gray-100 min-h-screen flex flex-col text-gray-900">
+    
+    <!-- ╭────────────────────────── TOP-BAR ─────────────────────────╮ -->
+    <header
+      class="w-full h-16 bg-indigo-700 text-white flex items-center justify-between px-4 md:px-8 shadow-md sticky top-0 z-50"
+    >
+        <a href="/" class="flex items-center space-x-2 hover:text-indigo-200 transition">
+          <img
+            src="/favicon.png"
+            alt="Serendilang logo"
+            class="w-8 h-8 rounded-md object-contain"
+          />
+          <span class="text-xl font-semibold">Serendilang</span>
+        </a>
+      <div class="flex items-center space-x-6 relative">
+        <!-- 下拉選單容器 -->
+        <div class="relative">
+          <!-- 下拉選單按鈕 -->
+          <button
+            id="topBar-doc-menuToggle"
+            class="text-2xl focus:outline-none"
+            aria-label="Toggle menu"
+          >
+            ☰
+          </button>
+
+          <!-- 下拉選單 -->
+          <div
+            id="topBar-doc-menuLinks"
+            class="hidden absolute right-0 top-14 w-48 bg-gray-50 text-gray-900 rounded-lg border border-gray-200 shadow-xl py-2 text-sm font-medium divide-y divide-gray-100
+                   transform transition-all duration-300 ease-out origin-top-right opacity-0 scale-95"
+          >
+            <a
+              href="/about"
+              class="block px-5 py-2.5 hover:bg-gray-100 hover:text-gray-900 transition"
+              >About</a
+            >
+            <a
+              href="/terms"
+              class="block px-5 py-2.5 hover:bg-gray-100 hover:text-gray-900 transition"
+              >Terms</a
+            >
+            <a
+              href="/privacy"
+              class="block px-5 py-2.5 hover:bg-gray-100 hover:text-gray-900 transition"
+              >Privacy</a
+            >
+            <a
+              href="/contact"
+              class="block px-5 py-2.5 hover:bg-gray-100 hover:text-gray-900 transition"
+              >Contact</a
+            >
+          </div>
+        </div>
+
+        <!-- Register / Login 永遠顯示 -->
+        <div class="ml-3">
+          <a
+            href="/login"
+            class="border border-white text-white rounded px-4 py-1 text-sm hover:bg-white hover:text-indigo-700 transition"
+          >
+            Register&nbsp;/&nbsp;Login
+          </a>
+        </div>
+      </div>
+    </header>
+    <!-- ╰────────────────────────────────────────────────────────────╯ -->
+    <main class="w-full flex-1 flex flex-col h-[calc(100vh-4rem)] relative">
+        <!-- ◉ 中間貼文區（上方主要內容） -->
+        <section
+            id="postsSection"
+            class="flex-1 overflow-y-auto flex flex-col items-center px-3 justify-center pb-[12rem]" 
+          
+        >
+            <div id="postsContainer" class="w-full md:w-1/2 flex flex-col items-stretch justify-center">
+                <!-- 貼文卡片動態插入 -->
+            </div>
+        </section>
+
+        <!-- ◉ 底部固定欄 -->
+        <section class= "fixed bottom-0 left-0 w-full h-[12rem]
+            footer-glass-gradient
+            backdrop-blur-md shadow-[0_-2px_6px_rgba(0,0,0,0.15)]
+            flex flex-col justify-center items-center p-6 border-t border-gray-200"
+        >
+            <h2 class="text-center text-2xl font-semibold leading-snug text-gray-800">
+                Welcome to Serendilang — Language Exchange, Now in Beta!
+            </h2>
+            <div class="flex gap-5 mt-4">
+                <a
+                    href="/login"
+                    class="px-5 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition"
+                >
+                    Log in
+                </a>
+                <a
+                    href="/register"
+                    class="px-5 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition"
+                >
+                    Register
+                </a>
+            </div>
+        </section>
+    </main>
+    <script>
+      const menuToggle = document.getElementById("topBar-doc-menuToggle");
+      const menuLinks = document.getElementById("topBar-doc-menuLinks");
+
+      menuToggle.addEventListener("click", (event) => {
+        event.stopPropagation();
+        const isHidden = menuLinks.classList.contains("hidden");
+
+        if (isHidden) {
+          menuLinks.classList.remove("hidden");
+          // 淡入
+          requestAnimationFrame(() => {
+            menuLinks.classList.remove("opacity-0", "scale-95");
+            menuLinks.classList.add("opacity-100", "scale-100");
+          });
+        } else {
+          // 淡出
+          menuLinks.classList.remove("opacity-100", "scale-100");
+          menuLinks.classList.add("opacity-0", "scale-95");
+          setTimeout(() => menuLinks.classList.add("hidden"), 200);
+        }
+      });
+
+      document.addEventListener("click", (event) => {
+        const isClickInside =
+          menuLinks.contains(event.target) || menuToggle.contains(event.target);
+        if (!isClickInside && !menuLinks.classList.contains("hidden")) {
+          menuLinks.classList.remove("opacity-100", "scale-100");
+          menuLinks.classList.add("opacity-0", "scale-95");
+          setTimeout(() => menuLinks.classList.add("hidden"), 200);
+        }
+      });
+    </script>
+    <script type="module" src="/webPageInit/clear_userPublicDataCache.js"></script>
+    <script type="module" src="/webPageInit/rootpage_initializer.js"></script>
+    <script type="module" src="/webPageInit/init_not_login_Post.js"></script>
+  </body>
+</html>
+

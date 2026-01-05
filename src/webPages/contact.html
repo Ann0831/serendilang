@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Contact – Serendilang</title>
+    <link rel="icon" href="/favicon.png" type="image/png" />   
+    <link rel="stylesheet" href="/assets/css/tabler-icons.min.css">
+    <link href="/assets/css/tailwind.css" rel="stylesheet" />
+  </head>
+
+  <body class="bg-gray-50 text-gray-900 min-h-screen flex flex-col">
+    <header
+      class="w-full h-16 bg-indigo-700 text-white flex items-center justify-between px-4 md:px-8 shadow-md sticky top-0 z-50"
+    >
+      <!-- 左側 Logo -->
+        <a href="/" class="flex items-center space-x-2 hover:text-indigo-200 transition">
+          <img
+            src="/favicon.png"
+            alt="Serendilang logo"
+            class="w-8 h-8 rounded-md object-contain"
+          />
+          <span class="text-xl font-semibold">Serendilang</span>
+        </a>
+      <div class="flex items-center space-x-6 relative">
+        <!-- 下拉選單容器 -->
+        <div class="relative">
+          <!-- 下拉選單按鈕 -->
+          <button
+            id="topBar-doc-menuToggle"
+            class="text-2xl focus:outline-none"
+            aria-label="Toggle menu"
+          >
+            ☰
+          </button>
+
+          <!-- 下拉選單 -->
+          <div
+            id="topBar-doc-menuLinks"
+            class="hidden absolute right-0 top-14 w-48 bg-gray-50 text-gray-900 rounded-lg border border-gray-200 shadow-xl py-2 text-sm font-medium divide-y divide-gray-100
+                   transform transition-all duration-300 ease-out origin-top-right opacity-0 scale-95"
+          >
+            <a href="/about" class="block px-5 py-2.5 hover:bg-gray-100 transition">About</a>
+            <a href="/terms" class="block px-5 py-2.5 hover:bg-gray-100 transition">Terms</a>
+            <a href="/privacy" class="block px-5 py-2.5 hover:bg-gray-100 transition">Privacy</a>
+            <a href="/contact" class="block px-5 py-2.5 hover:bg-gray-100 transition">Contact</a>
+          </div>
+        </div>
+
+        <!-- 右側使用者資訊 -->
+      <div id="topBar-self-profile-zone" class="flex items-center space-x-2 relative">
+        <img
+          id="full-header-avatar"
+          src="/path/to/avatar.jpg"
+          alt="avatar"
+          class="w-9 h-9 rounded-full object-cover ring-2 ring-white cursor-pointer"
+          data-action-list='[{"type":"click","action":"toggleLogout","eventParameter":{}}]'
+        />
+        <span
+          id="full-header-username"
+          class="font-medium cursor-pointer select-none hidden sm:inline"
+          data-action-list='[{"type":"click","action":"toggleLogout","eventParameter":{}}]'
+          >...
+        </span>
+        <button
+          class="ti ti-chevron-down text-lg hidden sm:inline"
+          aria-label="Toggle menu"
+          data-action-list='[{"type":"click","action":"toggleLogout","eventParameter":{}}]'
+        ></button>
+
+        <div
+          id="full-header-dropdown"
+          class="absolute right-0 top-12 w-44 bg-white text-gray-800 rounded-lg shadow-xl py-2 text-sm hidden border border-gray-100"
+        >
+          <span
+            class="block px-4 py-2 hover:bg-gray-100 cursor-pointer"
+            data-action-list='[{"type":"click","action":"executeLogout","eventParameter":{}}]'
+          >
+            Log out
+          </span>
+          <span
+            class="block px-4 py-2 hover:bg-red-50 text-red-600 font-medium cursor-pointer"
+            data-action-list='[{"type":"click","action":"executeLogoutAll","eventParameter":{}}]'
+          >
+            Log out all devices
+          </span>
+        </div>
+
+      </div>
+    </header>
+
+    <!-- 主內容 -->
+    <main class="flex-1 flex items-center justify-center p-8">
+      <div class="max-w-2xl bg-white rounded-2xl shadow p-8 space-y-6 w-full">
+        <h1 class="text-2xl font-semibold text-indigo-700 text-center">Contact Us</h1>
+        <p class="text-center text-gray-700">
+          If you have any questions, suggestions, or need assistance, please leave us a message. We’ll get back to you as soon as possible.
+        </p>
+        <p class="text-center">📧 Email: <a href="mailto:hello@serendilang.com" class="text-indigo-600 hover:underline">hello@serendilang.com</a></p>
+
+        <!-- 🔹 留言表單 -->
+        <form id="contactForm" class="flex flex-col space-y-4 pt-4">
+          <textarea
+            id="contactMessage"
+            rows="5"
+            placeholder="Write your message here..."
+            class="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-gray-800 placeholder-gray-400 resize-none"
+            required
+          ></textarea>
+          <button
+            type="submit"
+            class="bg-indigo-600 text-white py-2 rounded-md hover:bg-indigo-700 transition font-medium"
+          >
+            Send Message
+          </button>
+        </form>
+
+        <!-- 🔸 提示文字 -->
+        <p id="contactFeedback" class="text-center text-sm text-gray-600 hidden"></p>
+      </div>
+    </main>
+    <!-- ╭────────────────────────── BOTTOM-BAR ─────────────────────────╮ -->
+    <footer class="w-full bg-indigo-700 text-white py-6 mt-auto">
+      <div class="max-w-6xl mx-auto px-4 flex flex-col md:flex-row items-center justify-between space-y-3 md:space-y-0">
+        <!-- 左側品牌區 -->
+        <div class="flex items-center space-x-2">
+          <img src="/favicon.png" alt="Serendilang logo" class="w-6 h-6 rounded-md object-contain" />
+          <span class="font-semibold">Serendilang</span>
+        </div>
+
+        <!-- 中間導覽 -->
+        <div class="flex flex-wrap justify-center space-x-4 text-sm">
+          <a href="/about" class="hover:text-indigo-200 transition">About</a>
+          <a href="/terms" class="hover:text-indigo-200 transition">Terms</a>
+          <a href="/privacy" class="hover:text-indigo-200 transition">Privacy</a>
+          <a href="/contact" class="hover:text-indigo-200 transition">Contact</a>
+        </div>
+
+        <!-- 右側版權 -->
+        <div class="text-sm text-indigo-100">
+          © <span id="year"></span> Serendilang. All rights reserved.
+        </div>
+      </div>
+    </footer>
+
+    <script>
+      // 動態年份
+      document.getElementById("year").textContent = new Date().getFullYear();
+    </script>
+
+    <script>
+// 🔹 初始化留言區可見性
+     document.addEventListener("DOMContentLoaded", async () => {
+          const contactForm = document.getElementById("contactForm");
+          const overlay = document.createElement("div");
+          overlay.className = `
+               absolute inset-0 bg-white/70 backdrop-blur-sm flex items-center justify-center
+               text-gray-700 text-lg font-medium rounded-xl z-20
+          `;
+          overlay.textContent = "You haven’t logged in";
+
+          // 為確保 overlay 不影響登入狀態下樣式，預設不顯示
+          overlay.style.display = "none";
+          contactForm.style.position = "relative";
+          contactForm.appendChild(overlay);
+
+          try {
+               const res = await fetch("/api/users/current", { credentials: "include" });
+               const data = await res.json();
+               console.log(data);
+
+               if (data.status === "success" && data.data.user_id) {
+                    // ✅ 已登入：移除遮罩
+                    overlay.style.display = "none";
+                    Array.from(contactForm.elements).forEach(el => el.disabled = false);
+               } else {
+                    // ❌ 未登入：顯示遮罩並鎖定輸入
+                    overlay.style.display = "flex";
+                    Array.from(contactForm.elements).forEach(el => el.disabled = true);
+               }
+          } catch {
+               // ⚠️ 網路錯誤時同樣鎖定
+               overlay.style.display = "flex";
+               Array.from(contactForm.elements).forEach(el => el.disabled = true);
+          }
+     });
+
+
+      // 🔹 下拉選單控制
+      const menuToggle = document.getElementById("topBar-doc-menuToggle");
+      const menuLinks = document.getElementById("topBar-doc-menuLinks");
+
+      menuToggle.addEventListener("click", (event) => {
+        event.stopPropagation();
+        const isHidden = menuLinks.classList.contains("hidden");
+        if (isHidden) {
+          menuLinks.classList.remove("hidden");
+          requestAnimationFrame(() => {
+            menuLinks.classList.remove("opacity-0", "scale-95");
+            menuLinks.classList.add("opacity-100", "scale-100");
+          });
+        } else {
+          menuLinks.classList.remove("opacity-100", "scale-100");
+          menuLinks.classList.add("opacity-0", "scale-95");
+          setTimeout(() => menuLinks.classList.add("hidden"), 200);
+        }
+      });
+
+      document.addEventListener("click", (event) => {
+        const isClickInside = menuLinks.contains(event.target) || menuToggle.contains(event.target);
+        if (!isClickInside && !menuLinks.classList.contains("hidden")) {
+          menuLinks.classList.remove("opacity-100", "scale-100");
+          menuLinks.classList.add("opacity-0", "scale-95");
+          setTimeout(() => menuLinks.classList.add("hidden"), 200);
+        }
+      });
+
+      // 🔹 留言送出
+      document.getElementById("contactForm").addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const message = document.getElementById("contactMessage").value.trim();
+        const feedback = document.getElementById("contactFeedback");
+
+        if (!message) {
+          feedback.textContent = "Please enter a message.";
+          feedback.classList.remove("hidden");
+          return;
+        }
+
+        try {
+          const res = await fetch("/api/contact/submit", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            credentials: "include",
+            body: JSON.stringify({ message }),
+          });
+
+          const data = await res.json();
+          if (data.status === "success") {
+            feedback.textContent = "✅ Message sent successfully!";
+            feedback.classList.remove("hidden");
+            feedback.classList.add("text-green-600");
+            document.getElementById("contactMessage").value = "";
+          } else {
+            feedback.textContent = "❌ Failed to send message: " + (data.message || "Unknown error");
+            feedback.classList.remove("hidden");
+            feedback.classList.add("text-red-600");
+          }
+        } catch (err) {
+          feedback.textContent = "⚠️ Network error. Please try again later.";
+          feedback.classList.remove("hidden");
+          feedback.classList.add("text-red-600");
+        }
+      });
+    </script>
+
+    
+  </body>
+  <script type="module" src="/webPageInit/initTopBar.js"></script>
+  <script type="module" src="/webPageInit/initDocPageEvent.js"></script>
+</html>
+

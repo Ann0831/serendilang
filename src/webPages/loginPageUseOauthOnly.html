@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login – Serendilang</title>
+    <link rel="icon" href="/favicon.png" type="image/png" />
+    <!-- TailwindCSS -->
+    <link href="/assets/css/tailwind.css" rel="stylesheet" />
+
+    <!-- Tabler Icons -->
+    <link rel="stylesheet" href="/assets/css/tabler-icons.min.css">
+    <script type="module" src="/webPageInit/clear_userPublicDataCache.js"></script>
+  </head>
+
+  <body class="bg-gray-50 flex flex-col h-screen overflow-hidden text-gray-900">
+    <!-- ╭────────────────────────── TOP-BAR ─────────────────────────╮ -->
+    <header
+      class="w-full h-16 bg-indigo-700 text-white flex items-center justify-between px-4 md:px-8 shadow-md sticky top-0 z-50"
+    >
+      <a
+        href="/"
+        class="flex items-center space-x-2 hover:text-indigo-200 transition"
+      >
+        <img
+          src="/favicon.png"
+          alt="Serendilang logo"
+          class="w-8 h-8 rounded-md object-contain"
+        />
+        <span class="text-xl font-semibold">Serendilang</span>
+      </a>
+      <div class="flex items-center space-x-6 relative">
+        <!-- 下拉選單容器 -->
+        <div class="relative">
+          <!-- 下拉選單按鈕 -->
+          <button
+            id="topBar-doc-menuToggle"
+            class="text-2xl focus:outline-none"
+            aria-label="Toggle menu"
+          >
+            ☰
+          </button>
+
+          <!-- 下拉選單 -->
+          <div
+            id="topBar-doc-menuLinks"
+            class="hidden absolute right-0 top-14 w-48 bg-gray-50 text-gray-900 rounded-lg border border-gray-200 shadow-xl py-2 text-sm font-medium divide-y divide-gray-100
+                   transform transition-all duration-300 ease-out origin-top-right opacity-0 scale-95"
+          >
+            <a
+              href="/about"
+              class="block px-5 py-2.5 hover:bg-gray-100 hover:text-gray-900 transition"
+              >About</a
+            >
+            <a
+              href="/terms"
+              class="block px-5 py-2.5 hover:bg-gray-100 hover:text-gray-900 transition"
+              >Terms</a
+            >
+            <a
+              href="/privacy"
+              class="block px-5 py-2.5 hover:bg-gray-100 hover:text-gray-900 transition"
+              >Privacy</a
+            >
+            <a
+              href="/contact"
+              class="block px-5 py-2.5 hover:bg-gray-100 hover:text-gray-900 transition"
+              >Contact</a
+            >
+          </div>
+        </div>
+
+        <!-- Register 永遠顯示 -->
+        <div class="ml-3">
+          <a
+            href="/register"
+            class="border border-white text-white rounded px-4 py-1 text-sm hover:bg-white hover:text-indigo-700 transition"
+          >
+            Register
+          </a>
+        </div>
+      </div>
+    </header>
+    <!-- ╰────────────────────────────────────────────────────────────╯ -->
+
+    <!-- ◉ 主內容區：Google 登入 -->
+    <main
+      class="flex flex-col items-center justify-center w-full flex-1 pt-14 sm:pt-16 px-4 overflow-hidden"
+    >
+      <div
+        class="bg-white shadow-md sm:shadow-lg rounded-2xl p-6 sm:p-8 w-full max-w-sm sm:max-w-md flex flex-col gap-6 items-center text-center"
+      >
+        <h1
+          class="text-xl sm:text-2xl font-semibold text-indigo-700 mb-2 sm:mb-4"
+        >
+          Log In
+        </h1>
+
+        <p class="text-gray-600 text-sm mb-4">
+          Please sign in with your Google account to continue.
+        </p>
+
+        <button
+          id="googleLoginBtn"
+          class="flex items-center justify-center gap-3 bg-white border border-gray-300 rounded-md px-4 py-2 hover:bg-gray-50 transition w-full font-medium text-gray-700"
+        >
+          <i class="ti ti-brand-google text-xl text-red-500"></i>
+          <span>Sign in with Google</span>
+        </button>
+
+        <p class="text-xs text-gray-500 mt-2">
+          By signing in, you agree to our
+          <a href="/terms" class="underline hover:text-indigo-600">Terms</a> and
+          <a href="/privacy" class="underline hover:text-indigo-600"
+            >Privacy Policy</a
+          >.
+        </p>
+      </div>
+    </main>
+
+    <script>
+      // 🔹 Google 登入按鈕
+      const googleBtn = document.getElementById("googleLoginBtn");
+      googleBtn.addEventListener("click", () => {
+        window.location.href = "/login/oauth/google"; // 後端導向 Google OAuth
+      });
+
+      // 🔹 下拉選單控制
+      const menuToggle = document.getElementById("topBar-doc-menuToggle");
+      const menuLinks = document.getElementById("topBar-doc-menuLinks");
+
+      menuToggle.addEventListener("click", (event) => {
+        event.stopPropagation();
+        const isHidden = menuLinks.classList.contains("hidden");
+        if (isHidden) {
+          menuLinks.classList.remove("hidden");
+          requestAnimationFrame(() => {
+            menuLinks.classList.remove("opacity-0", "scale-95");
+            menuLinks.classList.add("opacity-100", "scale-100");
+          });
+        } else {
+          menuLinks.classList.remove("opacity-100", "scale-100");
+          menuLinks.classList.add("opacity-0", "scale-95");
+          setTimeout(() => menuLinks.classList.add("hidden"), 200);
+        }
+      });
+
+      document.addEventListener("click", (event) => {
+        const isClickInside =
+          menuLinks.contains(event.target) || menuToggle.contains(event.target);
+        if (!isClickInside && !menuLinks.classList.contains("hidden")) {
+          menuLinks.classList.remove("opacity-100", "scale-100");
+          menuLinks.classList.add("opacity-0", "scale-95");
+          setTimeout(() => menuLinks.classList.add("hidden"), 200);
+        }
+      });
+    </script>
+  </body>
+</html>
+

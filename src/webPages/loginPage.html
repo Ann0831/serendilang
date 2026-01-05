@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login - Serendilang</title>
+    <link rel="icon" href="/favicon.png" type="image/png" />
+    <!-- TailwindCSS -->
+    <link href="/assets/css/tailwind.css" rel="stylesheet" />
+
+    <!-- Tabler Icons -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css"
+    />
+
+    <!-- CryptoJS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.0.0/crypto-js.min.js"></script>
+    <script type="module" src="/webPageInit/loginPage_init.js"></script>
+  </head>
+
+  <body class="bg-gray-50 flex flex-col h-screen overflow-hidden text-gray-900">
+    <!-- ╭────────────────────────── TOP-BAR ─────────────────────────╮ -->
+<header class="w-full h-16 bg-indigo-700 text-white flex items-center justify-between px-4 md:px-8 shadow-md sticky top-0 z-50">
+        <a href="/" class="flex items-center space-x-2 hover:text-indigo-200 transition">
+          <img src="/favicon.png" alt="Serendilang logo" class="w-8 h-8 rounded-md object-contain">
+          <span class="text-xl font-semibold">Serendilang</span>
+        </a>
+      <div class="flex items-center space-x-6 relative">
+        <!-- 下拉選單容器 -->
+        <div class="relative">
+          <!-- 下拉選單按鈕 -->
+          <button id="topBar-doc-menuToggle" class="text-2xl focus:outline-none" aria-label="Toggle menu">
+            ☰
+          </button>
+
+          <!-- 下拉選單 -->
+          <div id="topBar-doc-menuLinks" class="hidden absolute right-0 top-14 w-48 bg-gray-50 text-gray-900 rounded-lg border border-gray-200 shadow-xl py-2 text-sm font-medium divide-y divide-gray-100
+                   transform transition-all duration-300 ease-out origin-top-right opacity-0 scale-95">
+            <a href="/about" class="block px-5 py-2.5 hover:bg-gray-100 hover:text-gray-900 transition">About</a>
+            <a href="/terms" class="block px-5 py-2.5 hover:bg-gray-100 hover:text-gray-900 transition">Terms</a>
+            <a href="/privacy" class="block px-5 py-2.5 hover:bg-gray-100 hover:text-gray-900 transition">Privacy</a>
+            <a href="/contact" class="block px-5 py-2.5 hover:bg-gray-100 hover:text-gray-900 transition">Contact</a>
+          </div>
+        </div>
+
+        <!-- Register / Login 永遠顯示 -->
+        <div class="ml-3">
+          <a href="/register" class="border border-white text-white rounded px-4 py-1 text-sm hover:bg-white hover:text-indigo-700 transition">
+            Register
+          </a>
+        </div>
+      </div>
+    </header>
+    <!-- ╰────────────────────────────────────────────────────────────╯ -->
+
+    <!-- ◉ 主內容區 -->
+    <main
+      class="flex flex-col items-center justify-center w-full flex-1 pt-14 sm:pt-16 px-4 overflow-hidden"
+    >
+      <form
+        id="myForm"
+        class="bg-white shadow-md sm:shadow-lg rounded-2xl p-6 sm:p-8 w-full max-w-sm sm:max-w-md flex flex-col gap-5"
+      >
+        <h1
+          class="text-xl sm:text-2xl font-semibold text-center text-indigo-700 mb-2 sm:mb-4"
+        >
+          Log In
+        </h1>
+
+        <div>
+          <label for="username" class="block text-sm font-medium text-gray-700 mb-1">
+            Username
+          </label>
+          <input
+            type="text"
+            name="username"
+            id="username"
+            placeholder="輸入用戶名"
+            required
+            class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-base sm:text-sm"
+          />
+        </div>
+
+        <div>
+          <label for="password" class="block text-sm font-medium text-gray-700 mb-1">
+            Password
+          </label>
+          <input
+            type="password"
+            name="password"
+            id="password"
+            placeholder="輸入密碼"
+            required
+            class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-base sm:text-sm"
+          />
+        </div>
+
+        <button
+          type="submit"
+          class="w-full bg-indigo-600 text-white py-2 rounded-md hover:bg-indigo-700 transition font-medium mt-2 sm:mt-3"
+        >
+          Submit
+        </button>
+      </form>
+    </main>
+
+    <script type="module" src="/webPageInit/clear_userPublicDataCache.js"></script>
+  </body>
+    <script>
+      const menuToggle = document.getElementById("topBar-doc-menuToggle");
+      const menuLinks = document.getElementById("topBar-doc-menuLinks");
+
+      menuToggle.addEventListener("click", (event) => {
+        event.stopPropagation();
+        const isHidden = menuLinks.classList.contains("hidden");
+
+        if (isHidden) {
+          menuLinks.classList.remove("hidden");
+          // 淡入
+          requestAnimationFrame(() => {
+            menuLinks.classList.remove("opacity-0", "scale-95");
+            menuLinks.classList.add("opacity-100", "scale-100");
+          });
+        } else {
+          // 淡出
+          menuLinks.classList.remove("opacity-100", "scale-100");
+          menuLinks.classList.add("opacity-0", "scale-95");
+          setTimeout(() => menuLinks.classList.add("hidden"), 200);
+        }
+      });
+
+      document.addEventListener("click", (event) => {
+        const isClickInside =
+          menuLinks.contains(event.target) || menuToggle.contains(event.target);
+        if (!isClickInside && !menuLinks.classList.contains("hidden")) {
+          menuLinks.classList.remove("opacity-100", "scale-100");
+          menuLinks.classList.add("opacity-0", "scale-95");
+          setTimeout(() => menuLinks.classList.add("hidden"), 200);
+        }
+      });
+    </script>
+
+</html>

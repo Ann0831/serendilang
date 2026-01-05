@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Register</title>
+    <link rel="icon" href="/favicon.png" type="image/png" />
+    <link href="/assets/css/tailwind.css" rel="stylesheet" />
+    <link rel="stylesheet" href="/assets/css/tabler-icons.min.css">
+  </head>
+
+  <body class="bg-gray-100 h-full flex flex-col text-gray-900">
+    <!-- ╭────────────────────────── TOP-BAR ─────────────────────────╮ -->
+    <header
+      class="w-full h-16 bg-indigo-700 text-white flex items-center justify-between px-4 md:px-8 shadow-md sticky top-0 z-50"
+    >
+      <a
+        href="/"
+        class="flex items-center space-x-2 hover:text-indigo-200 transition"
+      >
+        <img
+          src="/favicon.png"
+          alt="Serendilang logo"
+          class="w-8 h-8 rounded-md object-contain"
+        />
+        <span class="text-xl font-semibold">Serendilang</span>
+      </a>
+      <div class="flex items-center space-x-6 relative">
+        <div class="relative">
+          <button
+            id="topBar-doc-menuToggle"
+            class="text-2xl focus:outline-none"
+            aria-label="Toggle menu"
+          >
+            ☰
+          </button>
+
+          <div
+            id="topBar-doc-menuLinks"
+            class="hidden absolute right-0 top-14 w-48 bg-gray-50 text-gray-900 rounded-lg border border-gray-200 shadow-xl py-2 text-sm font-medium divide-y divide-gray-100
+                   transform transition-all duration-300 ease-out origin-top-right opacity-0 scale-95"
+          >
+            <a
+              href="/about"
+              class="block px-5 py-2.5 hover:bg-gray-100 hover:text-gray-900 transition"
+              >About</a
+            >
+            <a
+              href="/terms"
+              class="block px-5 py-2.5 hover:bg-gray-100 hover:text-gray-900 transition"
+              >Terms</a
+            >
+            <a
+              href="/privacy"
+              class="block px-5 py-2.5 hover:bg-gray-100 hover:text-gray-900 transition"
+              >Privacy</a
+            >
+            <a
+              href="/contact"
+              class="block px-5 py-2.5 hover:bg-gray-100 hover:text-gray-900 transition"
+              >Contact</a
+            >
+          </div>
+        </div>
+
+        <div class="ml-3">
+          <a
+            href="/login"
+            class="border border-white text-white rounded px-4 py-1 text-sm hover:bg-white hover:text-indigo-700 transition"
+          >
+            Login
+          </a>
+        </div>
+      </div>
+    </header>
+    <!-- ╰────────────────────────────────────────────────────────────╯ -->
+
+    <main class="flex flex-1 items-center justify-center">
+      <div class="bg-white p-8 rounded-lg shadow-lg text-center w-full max-w-sm">
+        <h1 class="text-2xl font-bold text-green-600 mb-6">Register</h1>
+        <button
+          id="googleRegister"
+          class="flex items-center justify-center gap-3 w-full bg-red-500 text-white py-2 rounded-md hover:bg-red-600 transition font-medium"
+        >
+          <i class="ti ti-brand-google text-xl"></i>
+          Register with Google
+        </button>
+      </div>
+    </main>
+
+    <script>
+      const menuToggle = document.getElementById("topBar-doc-menuToggle");
+      const menuLinks = document.getElementById("topBar-doc-menuLinks");
+
+      menuToggle.addEventListener("click", (event) => {
+        event.stopPropagation();
+        const isHidden = menuLinks.classList.contains("hidden");
+        if (isHidden) {
+          menuLinks.classList.remove("hidden");
+          requestAnimationFrame(() => {
+            menuLinks.classList.remove("opacity-0", "scale-95");
+            menuLinks.classList.add("opacity-100", "scale-100");
+          });
+        } else {
+          menuLinks.classList.remove("opacity-100", "scale-100");
+          menuLinks.classList.add("opacity-0", "scale-95");
+          setTimeout(() => menuLinks.classList.add("hidden"), 200);
+        }
+      });
+
+      document.addEventListener("click", (event) => {
+        const isClickInside =
+          menuLinks.contains(event.target) || menuToggle.contains(event.target);
+        if (!isClickInside && !menuLinks.classList.contains("hidden")) {
+          menuLinks.classList.remove("opacity-100", "scale-100");
+          menuLinks.classList.add("opacity-0", "scale-95");
+          setTimeout(() => menuLinks.classList.add("hidden"), 200);
+        }
+      });
+
+      // 點擊後導向 OAuth
+      document
+        .getElementById("googleRegister")
+        .addEventListener("click", () => {
+          window.location.href = "/register/oauth/google";
+        });
+    </script>
+  </body>
+</html>
+
