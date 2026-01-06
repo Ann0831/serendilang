@@ -28,7 +28,7 @@ Designing, maintaining, and preserving the scalability of such a system requires
 
 ### 1.3 Architectural Approach and Design Rationale
 
-To address these challenges, the front-end system is built using a multi-layer, self-defined architectural framework based on **HTML, JavaScript, and TailwindCSS**.
+To address these challenges, the front-end system is built using a multi-layer, self-defined architectural framework based on **HTML, JavaScript (ES6 modules), and TailwindCSS**.
 
 The multi-layer design assigns each layer a clearly defined category of responsibility, with strict dependency rules: each layer may only depend on layers beneath it.  
 This structure enforces a unidirectional flow of control and prevents implicit coupling across abstraction boundaries.
