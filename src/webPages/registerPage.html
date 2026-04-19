@@ -1,537 +1,103 @@
-<!DOCTYPE html>
-<html lang="en" class="h-full overflow-hidden">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Register</title>
-    <link rel="icon" href="/favicon.png" type="image/png" />
-    <!-- TailwindCSS -->
-    <link href="/assets/css/tailwind.css" rel="stylesheet" />
-    <!-- Tabler Icons -->
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css"
-    />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.0.0/crypto-js.min.js"></script>
-  </head>
-
-  <body class="bg-gray-100 h-full flex flex-col text-gray-900 overflow-hidden">
-    <!-- ╭────────────────────────── TOP-BAR ─────────────────────────╮ -->
-<header class="w-full h-16 bg-indigo-700 text-white flex items-center justify-between px-4 md:px-8 shadow-md sticky top-0 z-50">
-        <a href="/" class="flex items-center space-x-2 hover:text-indigo-200 transition">
-          <img src="/favicon.png" alt="Serendilang logo" class="w-8 h-8 rounded-md object-contain">
-          <span class="text-xl font-semibold">Serendilang</span>
-        </a>
-      <div class="flex items-center space-x-6 relative">
-        <!-- 下拉選單容器 -->
-        <div class="relative">
-          <!-- 下拉選單按鈕 -->
-          <button id="topBar-doc-menuToggle" class="text-2xl focus:outline-none" aria-label="Toggle menu">
-            ☰
-          </button>
-
-          <!-- 下拉選單 -->
-          <div id="topBar-doc-menuLinks" class="hidden absolute right-0 top-14 w-48 bg-gray-50 text-gray-900 rounded-lg border border-gray-200 shadow-xl py-2 text-sm font-medium divide-y divide-gray-100
-                   transform transition-all duration-300 ease-out origin-top-right opacity-0 scale-95">
-            <a href="/about" class="block px-5 py-2.5 hover:bg-gray-100 hover:text-gray-900 transition">About</a>
-            <a href="/terms" class="block px-5 py-2.5 hover:bg-gray-100 hover:text-gray-900 transition">Terms</a>
-            <a href="/privacy" class="block px-5 py-2.5 hover:bg-gray-100 hover:text-gray-900 transition">Privacy</a>
-            <a href="/contact" class="block px-5 py-2.5 hover:bg-gray-100 hover:text-gray-900 transition">Contact</a>
-          </div>
-        </div>
-
-        <!-- Register / Login 永遠顯示 -->
-        <div class="ml-3">
-          <a href="/login" class="border border-white text-white rounded px-4 py-1 text-sm hover:bg-white hover:text-indigo-700 transition">
-            Login
-          </a>
-        </div>
-      </div>
-    </header>
-    <!-- ╰────────────────────────────────────────────────────────────╯ -->
-<main class="flex flex-col flex-1 min-h-0">
-  <div
-    id="stepContainer"
-    class="relative flex flex-col bg-white shadow-lg w-full flex-1 min-h-0 overflow-hidden pb-28 px-4 sm:px-6 md:px-8 pt-6 md:pt-8 rounded-none md:rounded-none"
-  >
-    <!-- ✅ 綠色標題 -->
-    <h1 class="text-2xl sm:text-3xl font-bold text-green-600 text-center mb-4">Register</h1>
-
-    <!-- Step 1: Basic Info -->
-    <form id="step1" class="flex flex-col justify-between flex-1 min-h-0 overflow-y-auto gap-4">
-      <h2 class="text-xl sm:text-2xl font-semibold text-center text-indigo-700 mb-2">Step 1 / 3</h2>
-      <p class="text-center text-gray-500 mb-2 text-sm sm:text-base">Create your basic account</p>
-
-      <div class="flex flex-col items-center">
-        <label for="username" class="block text-sm font-medium text-gray-700 mb-1">Username</label>
-        <input
-          type="text"
-          id="username"
-          required
-          placeholder="Enter username"
-          class="w-full max-w-sm md:max-w-md border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-        />
-      </div>
-
-      <div class="flex flex-col items-center">
-        <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Password</label>
-        <input
-          type="password"
-          id="password"
-          required
-          placeholder="Set password"
-          class="w-full max-w-sm md:max-w-md border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-        />
-      </div>
-
-      <div class="flex flex-col items-center">
-        <label for="confirmPassword" class="block text-sm font-medium text-gray-700 mb-1">Confirm Password</label>
-        <input
-          type="password"
-          id="confirmPassword"
-          required
-          placeholder="Re-enter password"
-          class="w-full max-w-sm md:max-w-md border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-        />
-      </div>
-
-      <div class="flex flex-col items-center">
-        <label for="nativeLanguage" class="block text-sm font-medium text-gray-700 mb-1">Native Language</label>
-        <select
-          id="nativeLanguage"
-          required
-          class="w-full max-w-sm md:max-w-md border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-        >
-          <option value="">Select language</option>
-        </select>
-      </div>
-
-      <div class="flex flex-col items-center">
-        <label for="targetLanguage" class="block text-sm font-medium text-gray-700 mb-1">Target Language</label>
-        <select
-          id="targetLanguage"
-          required
-          class="w-full max-w-sm md:max-w-md border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-        >
-          <option value="">Select language</option>
-        </select>
-      </div>
-    </form>
-
-    <!-- Step 2: Upload Profile Picture -->
-    <form id="step2" class="flex flex-col justify-between flex-1 min-h-0 overflow-y-auto gap-4 hidden">
-      <h2 class="text-xl sm:text-2xl font-semibold text-center text-indigo-700 mb-2">Step 2 / 3</h2>
-      <p class="text-center text-gray-500 mb-2 text-sm sm:text-base">Upload your profile picture (optional)</p>
-
-      <div class="flex flex-col items-center justify-center gap-4">
-        <img
-          id="preview"
-          src="https://placehold.co/120x120?text=No+Photo"
-          alt="preview"
-          class="w-24 h-24 sm:w-28 sm:h-28 rounded-full object-cover border"
-        />
-        <input
-          type="file"
-          id="profilePic"
-          accept="image/*"
-          class="text-sm text-gray-600 w-full max-w-sm md:max-w-md"
-        />
-      </div>
-
-      <button
-        id="skipToStep3"
-        type="button"
-        class="text-sm text-gray-500 underline mt-2 hover:text-gray-700 self-center"
-      >
-        Skip this step
-      </button>
-    </form>
-
-    <!-- Step 3: Invitation Code -->
-      <form id="step3" class="flex flex-col justify-between flex-1 min-h-0 overflow-y-auto gap-4 hidden">
-        <h2 class="text-xl sm:text-2xl font-semibold text-center text-indigo-700 mb-2">Step 3 / 3</h2>
-        <p class="text-center text-gray-500 mb-2 text-sm sm:text-base">Enter your invitation code</p>
-
-        <div class="flex flex-col items-center">
-          <input
-            type="text"
-            id="invitationCode"
-            placeholder="Invitation code (optional)"
-            class="w-full max-w-sm md:max-w-md border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-          />
-        </div>
-
-        <!-- ✅ 同意條款 -->
-        <div class="flex items-start justify-center space-x-2 mt-2">
-          <input
-            id="agree"
-            type="checkbox"
-            class="mt-1 h-4 w-4 text-indigo-600 border-gray-300 rounded"
-            required
-          />
-          <label for="agree" class="text-sm text-gray-700 max-w-sm">
-            I have read and agree to the
-            <a href="/terms" target="_blank" rel="noopener noreferrer" class="text-indigo-600 underline hover:text-indigo-800">Terms of Service</a>
-            and
-            <a href="/privacy" target="_blank" rel="noopener noreferrer" class="text-indigo-600 underline hover:text-indigo-800">Privacy Policy</a>.
-          </label>
-        </div>
-
-        <button
-          id="finishBtn"
-          type="submit"
-          class="w-full max-w-sm md:max-w-md bg-green-600 text-white py-2 rounded-md hover:bg-green-700 transition font-medium self-center"
-        >
-          Finish
-        </button>
-      </form>
-  </div>
-
-  <!-- ✅ Bottom Navigation Bar: Fixed on mobile, inline on desktop -->
-  <div
-    id="regNav"
-    class="fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-gray-200
-           px-4 py-3 pb-[calc(env(safe-area-inset-bottom)+0.75rem)]
-           md:border-t-0 md:bg-transparent md:py-5"
-  >
-    <div class="max-w-screen-sm mx-auto flex items-center justify-center gap-6">
-      <!-- ← Back -->
-      <button
-        id="prevStep"
-        type="button"
-        class="text-gray-600 hover:text-indigo-600 font-medium"
-      >
-        ← Back
-      </button>
-
-      <!-- Progress Dots -->
-      <div class="flex justify-center gap-2">
-        <div id="dot1" class="w-3 h-3 rounded-full bg-indigo-600"></div>
-        <div id="dot2" class="w-3 h-3 rounded-full bg-gray-300"></div>
-        <div id="dot3" class="w-3 h-3 rounded-full bg-gray-300"></div>
-      </div>
-
-      <!-- Next → -->
-      <button
-        id="nextStep"
-        type="button"
-        class="text-indigo-600 hover:text-indigo-800 font-medium"
-      >
-        Next →
-      </button>
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Register - Serendilang</title>
+  <link rel="icon" href="../src/assets/images/favicon.png" type="image/png" /> 
+  <link rel="stylesheet" href="../src/assets/css/tabler-icons.min.css" />
+  <style>
+    :root {
+      color-scheme: light;
+    }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: linear-gradient(180deg, #f5fff5 0%, #ffffff 100%);
+      color: #111827;
+    }
+    .card {
+      width: min(92vw, 420px);
+      background: #ffffff;
+      border: 1px solid #d7f3df;
+      border-radius: 14px;
+      padding: 28px 22px;
+      box-shadow: 0 10px 30px rgba(17, 24, 39, 0.08);
+      text-align: center;
+    }
+    h1 {
+      margin: 0 0 8px;
+      font-size: 1.5rem;
+    }
+    p {
+      margin: 0 0 18px;
+      color: #4b5563;
+      line-height: 1.4;
+    }
+    .btn {
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+      margin-top: 6px;
+      padding: 0;
+      border-radius: 20px;
+      border: 0;
+      background: transparent;
+      color: inherit;
+      font-weight: 400;
+      text-decoration: none;
+      box-sizing: border-box;
+    }
+    .btn img {
+      display: block;
+      width: min(100%, 179px);
+      height: auto;
+    }
+    .footer {
+      margin-top: 14px;
+      font-size: 0.95rem;
+      color: #6b7280;
+      text-align: center;
+    }
+    .footer a {
+      color: #166534;
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+  <main class="card">
+    <h1 id="register-title">Register</h1>
+    <p id="register-subtitle">Create your account with Google OAuth.</p>
+    <a id="register-google-btn" class="btn" href="/register/oauth/google">
+      <img src="../src/Google_signin_assets/Web (mobile + desktop)/svg/light/web_light_rd_SU.svg" alt="Sign up with Google" />
+    </a>
+    <div class="footer">
+      <span id="register-footer-prefix">Already have an account?</span>
+      <a id="register-login-link" href="/login">Go to Login</a>
     </div>
-  </div>
-</main>
-
-<script type="module" src="/webPageInit/clear_userPublicDataCache.js"></script>
-<script type="module">
-  import { validlanguage } from "/utils/language/validLanguage.js";
-  import { verifyUsernameBeforeRegister, registerService } from "/service/registerService.js";
-  import { hashPassword } from "/utils/hashPassword.js"; 
-  const { languages } = validlanguage();
-
-  const nativeSelect = document.getElementById("nativeLanguage");
-  const targetSelect = document.getElementById("targetLanguage");
-  for (const lang of languages) {
-    const opt1 = document.createElement("option");
-    opt1.value = lang.lowercase;
-    opt1.textContent = lang.name;
-    nativeSelect.appendChild(opt1);
-
-    const opt2 = document.createElement("option");
-    opt2.value = lang.lowercase;
-    opt2.textContent = lang.name;
-    targetSelect.appendChild(opt2);
-  }
-
-  const stepForms = [
-    document.getElementById("step1"),
-    document.getElementById("step2"),
-    document.getElementById("step3"),
-  ];
-  const dots = [
-    document.getElementById("dot1"),
-    document.getElementById("dot2"),
-    document.getElementById("dot3"),
-  ];
-
-  const prevBtn = document.getElementById("prevStep");
-  const nextBtn = document.getElementById("nextStep");
-  const skipBtn = document.getElementById("skipToStep3");
-  const finishBtn = document.getElementById("finishBtn");
-
-  const fileInput = document.getElementById("profilePic");
-  const previewImg = document.getElementById("preview");
-
-  const usernameInput = document.getElementById("username");
-  const passwordInput = document.getElementById("password");
-  const confirmInput  = document.getElementById("confirmPassword");
-  const invitationInput = document.getElementById("invitationCode");
-
-  let current = 0; // 0,1,2 對應 step1~3
-  let isChecking = false; // ★ 檢查鎖，防止重複點擊
-  let isRegistering = false; // ★ 註冊鎖
-
-  function updateNavUI() {
-    prevBtn.disabled = current === 0;
-    prevBtn.classList.toggle("opacity-40", prevBtn.disabled);
-    const isLast = current === 2;
-    nextBtn.classList.toggle("hidden", isLast);
-    nextBtn.disabled = isLast || isChecking; // ★ 只在檢查中或最後一步才鎖住
-    nextBtn.classList.toggle("opacity-40", nextBtn.disabled);
-    if (skipBtn) {
-      const showSkip = current === 1;
-      skipBtn.classList.toggle("hidden", !showSkip);
-    }
-  }
-
-  function showStep(index) {
-    current = Math.max(0, Math.min(2, index));
-    stepForms.forEach((form, i) => {
-      form.classList.toggle("hidden", i !== current);
-    });
-    dots.forEach((dot, i) => {
-      dot.className =
-        "w-3 h-3 rounded-full " + (i === current ? "bg-indigo-600" : "bg-gray-300");
-      dot.setAttribute("aria-current", i === current ? "step" : "false");
-    });
-    updateNavUI();
-  }
-
-  showStep(0);
-
-  function validatePasswords(setMessage = true) {
-    passwordInput.setCustomValidity("");
-    confirmInput.setCustomValidity("");
-    if (passwordInput.value.length < 8) {
-      if (setMessage) passwordInput.setCustomValidity("Password must be at least 8 characters.");
-    }
-    if (confirmInput.value && confirmInput.value !== passwordInput.value) {
-      if (setMessage) confirmInput.setCustomValidity("Passwords do not match.");
-    }
-    return passwordInput.checkValidity() && confirmInput.checkValidity();
-  }
-
-  prevBtn.addEventListener("click", () => showStep(current - 1));
-
-  // ─── Step1 → Next：統一檢查邏輯 ───────────────────────────────
-  nextBtn.addEventListener("click", async () => {
-    if (isChecking) return; // ★ 防止重複點擊
-    if (current === 0) {
-      const passOK = validatePasswords(true);
-      if (!passOK) {
-        stepForms[0].reportValidity();
-        return;
-      }
-
-      const username = usernameInput.value.trim();
-      if (!username) {
-        usernameInput.setCustomValidity("Username cannot be empty.");
-        usernameInput.reportValidity();
-        return;
-      }
-      usernameInput.setCustomValidity("");
-
-      // 顯示 loading 狀態
-      isChecking = true;
-      nextBtn.disabled = true;
-      const originalHTML = nextBtn.innerHTML;
-      nextBtn.innerHTML = `<span class="animate-spin mr-2 border-2 border-t-transparent border-indigo-600 rounded-full w-4 h-4 inline-block align-middle"></span>Checking...`;
-
-      try {
-        const result = await verifyUsernameBeforeRegister(username);
-        console.log("verifyUsernameBeforeRegister:", result);
-
-        if (result.result === "available") {
-          showStep(current + 1);
-        } else if (result.result === "used") {
-          usernameInput.setCustomValidity("This username is already taken.");
-          usernameInput.reportValidity();
-        } else if (result.result === "illegal") {
-          usernameInput.setCustomValidity("Username can only contain letters, numbers, and underscores, and must be under 20 characters.");
-          usernameInput.reportValidity();
-        } else if (result.result === "error") {
-          showNetworkErrorBanner();
-        }
-      } catch (err) {
-        console.error("Error verifying username:", err);
-        showNetworkErrorBanner();
-      } finally {
-        // 還原按鈕
-        isChecking = false;
-        nextBtn.disabled = false;
-        nextBtn.innerHTML = originalHTML;
-        updateNavUI();
-      }
-      return;
-    }
-
-    showStep(current + 1);
-  });
-
-  if (skipBtn) {
-    skipBtn.addEventListener("click", () => showStep(2));
-  }
-
-  document.addEventListener("keydown", (e) => {
-    const active = document.activeElement;
-    const inTyping =
-      active && (active.tagName === "INPUT" || active.tagName === "TEXTAREA" || active.tagName === "SELECT");
-    if (inTyping) return;
-    if (e.key === "ArrowLeft") showStep(current - 1);
-    if (e.key === "ArrowRight") {
-      if (current === 0) nextBtn.click();
-      else showStep(current + 1);
-    }
-  });
-
-  if (fileInput && previewImg) {
-    fileInput.addEventListener("change", (e) => {
-      const file = e.target.files?.[0];
-      if (!file) return;
-      previewImg.src = URL.createObjectURL(file);
-    });
-  }
-
-  stepForms.forEach((form) => {
-    form.addEventListener("submit", (ev) => ev.preventDefault());
-  });
-
-  if (finishBtn) {
-    finishBtn.addEventListener("click", async (e) => {
-      e.preventDefault();
-      if (isRegistering) return;
-
-      // 最終再保險檢查一次 Step1（避免使用者跳來跳去導致狀態異常）
-      const passOK = validatePasswords(true);
-      const formOK = stepForms[0].checkValidity();
-      if (!passOK || !formOK) {
-        showStep(0);
-        stepForms[0].reportValidity();
-        return;
-      }
-
-      // ✅ 檢查是否勾選同意條款
-      const agreeCheckbox = document.getElementById("agree");
-      if (!agreeCheckbox || !agreeCheckbox.checked) {
-        showToast("error", "Please agree to the Terms and Privacy Policy before continuing.");
-        agreeCheckbox?.focus();
-        return;
-      }
-
-      // 收集註冊資料
-      const username = usernameInput.value.trim();
-      const password = passwordInput.value;
-      const native_language = nativeSelect.value || "";
-      const target_language = targetSelect.value || "";
-      const invitation_code = (invitationInput?.value || "").trim();
-
-      // 前端產生 SHA-256 雜湊（hex）
-      const password_hash = await hashPassword(password);
-
-      // ✅ 組成 payload，加入條款同意資訊
-      const payload = {
-        username,
-        hashed_password: password_hash,
-        nativelanguage: native_language,
-        targetlanguage: target_language,
-        profilePicFile: fileInput.files?.[0] || null,
-        inviteCode: invitation_code,
-        agree_terms: agreeCheckbox.checked,
-        agree_privacy: agreeCheckbox.checked,
-      };
-
-      console.log("payload: ", payload);
-
-      // 鎖住按鈕 + spinner
-      isRegistering = true;
-      const originalHTML = finishBtn.innerHTML;
-      finishBtn.disabled = true;
-      finishBtn.innerHTML = `<span class="animate-spin mr-2 border-2 border-t-transparent border-white rounded-full w-4 h-4 inline-block align-middle"></span>Submitting...`;
-
-      try {
-        const resp = await registerService(payload);
-        // 兼容 registerService 回傳字串或物件
-        const result = typeof resp === "string" ? resp : resp?.result;
-        const reason = typeof resp === "object" ? (resp?.reason || resp?.message || resp?.res?.message) : undefined;
-
-        if (result === "success") {
-          showToast("success", "🎉 Registration successful! Redirecting...");
-          setTimeout(() => {
-            window.location.href = "/";
-          }, 1500);
-        } else {
-          const msg = reason ? `Registration failed: ${reason}` : "Registration failed.";
-          showToast("error", msg);
-        }
-      } catch (err) {
-        console.error("registerService error:", err);
-        showToast("error", "Network error during registration.");
-      } finally {
-        isRegistering = false;
-        finishBtn.disabled = false;
-        finishBtn.innerHTML = originalHTML;
-      }
-    });
-
-
-  }
-
-  // ─── 顯示網路錯誤提示（幾秒後自動消失） ─────────────────────────────────────────────
-  function showNetworkErrorBanner() {
-    showToast("error", "Network error, please try again later.");
-  }
-
-  // ─── 通用 Toast（3 秒自動消失） ─────────────────────────────────────────────
-  function showToast(type, message, duration = 3000) {
-    const colors = {
-      success: "bg-green-600",
-      error: "bg-red-600",
-      info: "bg-indigo-600",
-    };
-    const banner = document.createElement("div");
-    banner.className =
-      `fixed top-4 left-1/2 transform -translate-x-1/2 ${colors[type] || colors.info} ` +
-      "text-white px-4 py-2 rounded shadow-lg z-50";
-    banner.textContent = message;
-    document.body.appendChild(banner);
-    setTimeout(() => banner.remove(), duration);
-  }
-
-</script>
-    <script>
-      const menuToggle = document.getElementById("topBar-doc-menuToggle");
-      const menuLinks = document.getElementById("topBar-doc-menuLinks");
-
-      menuToggle.addEventListener("click", (event) => {
-        event.stopPropagation();
-        const isHidden = menuLinks.classList.contains("hidden");
-
-        if (isHidden) {
-          menuLinks.classList.remove("hidden");
-          // 淡入
-          requestAnimationFrame(() => {
-            menuLinks.classList.remove("opacity-0", "scale-95");
-            menuLinks.classList.add("opacity-100", "scale-100");
-          });
-        } else {
-          // 淡出
-          menuLinks.classList.remove("opacity-100", "scale-100");
-          menuLinks.classList.add("opacity-0", "scale-95");
-          setTimeout(() => menuLinks.classList.add("hidden"), 200);
-        }
-      });
-
-      document.addEventListener("click", (event) => {
-        const isClickInside =
-          menuLinks.contains(event.target) || menuToggle.contains(event.target);
-        if (!isClickInside && !menuLinks.classList.contains("hidden")) {
-          menuLinks.classList.remove("opacity-100", "scale-100");
-          menuLinks.classList.add("opacity-0", "scale-95");
-          setTimeout(() => menuLinks.classList.add("hidden"), 200);
-        }
-      });
-    </script>
-  </body>
+  </main>
+  <script>
+    (function () {
+      const isZh = typeof navigator !== "undefined" && String(navigator.language || "").toLowerCase().startsWith("zh");
+      if (!isZh) return;
+      const byId = (id) => document.getElementById(id);
+      document.title = "註冊 - Serendilang";
+      const title = byId("register-title");
+      const subtitle = byId("register-subtitle");
+      const footerPrefix = byId("register-footer-prefix");
+      const loginLink = byId("register-login-link");
+      if (title) title.textContent = "註冊";
+      if (subtitle) subtitle.textContent = "使用 Google OAuth 建立你的帳號。";
+      if (footerPrefix) footerPrefix.textContent = "已經有帳號？";
+      if (loginLink) loginLink.textContent = "前往登入";
+    })();
+  </script>
+  <script type="module" src="../src/webPageInit/initTopBar.js"></script>
+</body>
 </html>
 
