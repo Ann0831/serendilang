@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>User Profile</title>
+  <link rel="icon" href="../src/assets/images/favicon.png" type="image/png" />
+  <link rel="stylesheet" href="../src/assets/css/tabler-icons.min.css" />
+</head>
+<body class="bg-gray-50 text-gray-900 min-h-screen">
+  <div id="user_profile_pages"></div>
+  <div id="global_display"></div>
+  <div id="error_messages"></div>
+  <div id="notification_messages"></div>
+  <div id="chatRoomsContainer"></div>
+  <div id="userprofilepage-userinfo" class="hidden"></div>
+
+  <script type="module" src="../src/webPageInit/clear_userPublicDataCache.js"></script>
+  <script type="module" src="../src/webPageInit/initTopBar.js"></script>
+  <script type="module" src="../src/webPageInit/userpage_initializer.js"></script>
+  <script type="module" src="../src/webPageInit/initSystemNotifications.js"></script>
+  <script type="module" src="../src/webPageInit/initializeWss.js"></script>
+  <script type="module" src="../src/utils/soundUnlock.js"></script>
+</body>
+</html>

@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OAuth Result</title>
+  <link rel="icon" href="/favicon.png" type="image/png" />
+</head>
+<body style="margin:0;background:#f8fafc;color:#0f172a;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;">
+  <main style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;">
+    <section style="max-width:600px;background:#fff;border:1px solid #e2e8f0;border-radius:16px;box-shadow:0 10px 30px rgba(2,6,23,0.08);padding:28px 24px;">
+      <h1 id="title" style="margin:0 0 12px;font-size:24px;line-height:1.3;">OAuth Result</h1>
+      <p id="message" style="margin:0;line-height:1.8;color:#334155;">Please go back and try again.</p>
+      <p style="margin:14px 0 0;color:#64748b;font-size:14px;">
+        <a href="/" style="color:#2563eb;text-decoration:none;">Back to home</a>
+      </p>
+    </section>
+  </main>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const scene = params.get("scene") || "general";
+    const reason = params.get("reason") || "UNKNOWN";
+
+    const titleEl = document.getElementById("title");
+    const messageEl = document.getElementById("message");
+
+    const map = {
+      OAUTH_EXPIRED: {
+        title: "Session Expired",
+        message: "Your OAuth session expired. Please retry sign-in.",
+      },
+      EMAIL_UNVERIFIED: {
+        title: "Email Not Verified",
+        message: "Your Google account email is not verified.",
+      },
+      EMAIL_NOT_FOUND: {
+        title: "Account Not Found",
+        message: "No account is linked to this Google email.",
+      },
+      EMAIL_ALREADY_REGISTERED: {
+        title: "Already Registered",
+        message: "This Google email is already registered.",
+      },
+      ACCOUNT_SUSPENDED: {
+        title: "Account Suspended",
+        message: "This account is suspended due to policy violations.",
+      },
+    };
+
+    const preset = map[reason] || {
+      title: "OAuth Error",
+      message: "Unable to continue OAuth flow. Please try again.",
+    };
+
+    titleEl.textContent = scene === "register" ? `${preset.title} (Register)` : preset.title;
+    messageEl.textContent = preset.message;
+  </script>
+</body>
+</html>

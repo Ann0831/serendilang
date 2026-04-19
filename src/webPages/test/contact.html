@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Contact – Serendilang</title>
+    <link rel="icon" href="/favicon.png" type="image/png" />  
+    <link rel="stylesheet" href="../../src/assets/css/tabler-icons.min.css" />
+    <link rel="stylesheet" href="../../src/css/index.css" />
+  </head>
+
+  <body class="bg-gray-50 text-gray-900 min-h-screen flex flex-col pt-16">
+    <!-- 主內容 -->
+    <main class="flex-1 flex items-center justify-center p-8 lg:pl-72">
+      <div class="max-w-2xl bg-white rounded-2xl shadow p-8 space-y-6 w-full">
+        <h1 class="text-2xl font-semibold text-indigo-700 text-center">Contact Us</h1>
+        <p class="text-center text-gray-700">
+          If you have any questions, suggestions, or need assistance, please leave us a message. We’ll get back to you as soon as possible.
+        </p>
+        <p class="text-center">📧 Email: <a href="mailto:hello@serendilang.com" class="text-indigo-600 hover:underline">hello@serendilang.com</a></p>
+
+        <!-- 🔹 留言表單 -->
+        <form id="contactForm" class="flex flex-col space-y-4 pt-4">
+          <textarea
+            id="contactMessage"
+            rows="5"
+            placeholder="Write your message here..."
+            class="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-gray-800 placeholder-gray-400 resize-none"
+            required
+          ></textarea>
+          <button
+            type="submit"
+            class="bg-indigo-600 text-white py-2 rounded-md hover:bg-indigo-700 transition font-medium"
+          >
+            Send Message
+          </button>
+        </form>
+
+        <!-- 🔸 提示文字 -->
+        <p id="contactFeedback" class="text-center text-sm text-gray-600 hidden"></p>
+      </div>
+    </main>
+    <div class="w-full py-6 mt-auto text-center text-sm text-gray-500">© 2026 Serendilang. All rights reserved.</div>
+
+    <script>
+// 🔹 初始化留言區可見性
+     document.addEventListener("DOMContentLoaded", async () => {
+          const contactForm = document.getElementById("contactForm");
+          const overlay = document.createElement("div");
+          overlay.className = `
+               absolute inset-0 bg-white/70 backdrop-blur-sm flex items-center justify-center
+               text-gray-700 text-lg font-medium rounded-xl z-20
+          `;
+          overlay.textContent = "You haven’t logged in";
+
+          // 為確保 overlay 不影響登入狀態下樣式，預設不顯示
+          overlay.style.display = "none";
+          contactForm.style.position = "relative";
+          contactForm.appendChild(overlay);
+
+          try {
+               const res = await fetch("/api/users/current", { credentials: "include" });
+               const data = await res.json();
+               console.log(data);
+
+               if (data.status === "success" && data.data.user_id) {
+                    // ✅ 已登入：移除遮罩
+                    overlay.style.display = "none";
+                    Array.from(contactForm.elements).forEach(el => el.disabled = false);
+               } else {
+                    // ❌ 未登入：顯示遮罩並鎖定輸入
+                    overlay.style.display = "flex";
+                    Array.from(contactForm.elements).forEach(el => el.disabled = true);
+               }
+          } catch {
+               // ⚠️ 網路錯誤時同樣鎖定
+               overlay.style.display = "flex";
+               Array.from(contactForm.elements).forEach(el => el.disabled = true);
+          }
+     });
+
+      // 🔹 留言送出
+      document.getElementById("contactForm").addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const message = document.getElementById("contactMessage").value.trim();
+        const feedback = document.getElementById("contactFeedback");
+
+        if (!message) {
+          feedback.textContent = "Please enter a message.";
+          feedback.classList.remove("hidden");
+          return;
+        }
+
+        try {
+          const res = await fetch("/api/contact/submit", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            credentials: "include",
+            body: JSON.stringify({ message }),
+          });
+
+          const data = await res.json();
+          if (data.status === "success") {
+            feedback.textContent = "✅ Message sent successfully!";
+            feedback.classList.remove("hidden");
+            feedback.classList.add("text-green-600");
+            document.getElementById("contactMessage").value = "";
+          } else {
+            feedback.textContent = "❌ Failed to send message: " + (data.message || "Unknown error");
+            feedback.classList.remove("hidden");
+            feedback.classList.add("text-red-600");
+          }
+        } catch (err) {
+          feedback.textContent = "⚠️ Network error. Please try again later.";
+          feedback.classList.remove("hidden");
+          feedback.classList.add("text-red-600");
+        }
+      });
+    </script>
+
+    <script type="module" src="../../src/webPageInit/initTopBar.js"></script>
+    <script type="module" src="../../src/webPageInit/initDocSideBar.js"></script>
+    <script type="module" src="../../src/webPageInit/initDocPageEvent.js"></script>
+  </body>
+</html>

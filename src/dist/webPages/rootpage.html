@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Serendilang</title>
+  <link rel="icon" href="/sourcecode/assets/favicon-BjzQ4Qxh.png" type="image/png" />
+  <style>
+    #root-cta-left {
+      position: fixed;
+      top: 4rem;
+      left: 0;
+      width: 100%;
+      z-index: 30;
+      background: transparent;
+    }
+
+    @media (min-width: 768px) {
+      #root-cta-left {
+        width: 50%;
+        background: transparent;
+      }
+    }
+  </style>
+  <script type="module" crossorigin src="/sourcecode/assets/webPages/rootpage.html-2EcTFTda.js"></script>
+  <link rel="modulepreload" crossorigin href="/sourcecode/assets/userSelfData-Bu-bYBhN.js">
+  <link rel="modulepreload" crossorigin href="/sourcecode/assets/userPublicDataCache-CY_uzP8B.js">
+  <link rel="modulepreload" crossorigin href="/sourcecode/assets/clear_userPublicDataCache-BWuoU-81.js">
+  <link rel="modulepreload" crossorigin href="/sourcecode/assets/analyticsService-_WkZxTGn.js">
+  <link rel="modulepreload" crossorigin href="/sourcecode/assets/topBar-BVJfZ0MB.js">
+  <link rel="modulepreload" crossorigin href="/sourcecode/assets/eventEmitter-yk-soYFy.js">
+  <link rel="modulepreload" crossorigin href="/sourcecode/assets/notificationMessages-C3IboNFJ.js">
+  <link rel="modulepreload" crossorigin href="/sourcecode/assets/frontendNotification-vJdNEmG4.js">
+  <link rel="modulepreload" crossorigin href="/sourcecode/assets/soundPlayer-Drfu0Vcw.js">
+  <link rel="modulepreload" crossorigin href="/sourcecode/assets/soundUnlock-BWn8ZytV.js">
+  <link rel="modulepreload" crossorigin href="/sourcecode/assets/safeNavigate-BBmHP0bc.js">
+  <link rel="stylesheet" crossorigin href="/sourcecode/assets/userSelfData-CvEw2xFd.css">
+</head>
+<body class="bg-gray-100 min-h-screen text-gray-900">
+  <div id="error_messages"></div>
+  <div id="notification_messages"></div>
+  <div id="chatRoomsContainer"></div>
+  <main id="root_pages" class="w-full min-h-screen flex flex-col pt-16">
+    <section id="root-cta-left" class="w-full px-4 sm:px-6 pt-5 pb-3 flex items-center justify-center border-b border-gray-200 shadow-sm opacity-0 -translate-x-3 transition-all duration-700 ease-out md:px-14 md:pt-6 md:pb-0 md:h-[calc(100vh-4rem-12rem)] md:border-b-0 md:shadow-none">
+      <div class="w-full max-w-md text-center">
+        <p id="root-cta-title-1" class="text-2xl sm:text-3xl font-bold tracking-wide text-indigo-700 inline-flex items-center gap-2 justify-center">
+          Find New Friends
+          <i class="ti ti-arrow-right hidden md:inline-block text-2xl sm:text-3xl"></i>
+        </p>
+        <p id="root-cta-title-2" class="mt-2 text-xl sm:text-2xl font-semibold leading-snug text-gray-900">
+          Make real friends while learning languages together.
+        </p>
+        <p id="root-cta-desc" class="mt-3 text-sm sm:text-base leading-relaxed text-gray-700">
+          Chat with people worldwide, practice daily, and build meaningful connections in Serendilang.
+        </p>
+        <div class="mt-5 flex items-center justify-center gap-3 flex-wrap">
+          <a id="root-cta-login" href="/login" class="px-5 py-2 rounded-lg bg-indigo-600 text-white font-semibold hover:bg-indigo-700 transition w-full sm:w-auto">
+            Log In
+          </a>
+          <a id="root-cta-register" href="/register" class="px-5 py-2 rounded-lg bg-emerald-100 text-emerald-700 font-semibold hover:bg-emerald-200 transition border border-emerald-300 w-full sm:w-auto">
+            Register
+          </a>
+        </div>
+      </div>
+    </section>
+    <section id="postsSection" class="w-full min-h-[calc(100vh-4rem)] pt-[18.5rem] sm:pt-[16.5rem] md:pt-0 pb-8 md:pb-[12rem] flex flex-col items-center px-2 sm:px-3 md:ml-auto md:w-1/2">
+      <div id="postsContainer" class="w-full flex flex-col items-stretch justify-center"></div>
+    </section>
+    <section id="root-welcome-banner" class="relative mt-2 w-full bg-white/70 backdrop-blur-md shadow-[0_-2px_6px_rgba(0,0,0,0.15)] flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4 border-t border-gray-200 opacity-0 translate-y-3 transition-all duration-700 ease-out md:fixed md:bottom-0 md:left-0">
+      <h2 id="root-welcome-title" class="w-full text-center text-base sm:text-xl md:text-2xl font-semibold leading-snug text-gray-800">
+        Welcome to Serendilang - Language Exchange, Now in Beta!
+      </h2>
+    </section>
+  </main>
+</body>
+</html>
+

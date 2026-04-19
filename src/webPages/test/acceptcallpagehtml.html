@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Accept Call Sample</title>
+  <link rel="icon" href="/favicon.png" type="image/png" />
+  <link rel="stylesheet" href="../../src/assets/css/tabler-icons.min.css" />
+</head>
+<body>
+  <div id="call_root"></div>
+  <script>
+    window.__CALL_PAGE_CONTEXT__ = {
+      isCaller: false,
+      currentUserId: "u1",
+      targetId: "u2",
+      enableCamera: true,
+      callExternalId: "call123abc",
+      rtcConfig: {
+        iceServers: [
+          { urls: "stun:stun.l.google.com:19302" },
+          { urls: "stun:turn.serendilang.com:3478", username: "mockTurnUser", credential: "mockTurnCred" }
+        ],
+        iceTransportPolicy: "all"
+      }
+    };
+    window.__IS_CALLER__ = false;
+    window.__CURRENT_USER_ID__ = "u1";
+    window.__TARGET_USER_ID__ = "u2";
+  </script>
+  <script type="module" src="../../src/webPageInit/callpage_initializer.js"></script>
+</body>
+</html>

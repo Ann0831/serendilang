@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Video Call</title>
+  <link rel="icon" href="/favicon.png" type="image/png" />
+</head>
+<body>
+  <div id="call_root"></div>
+  <script>
+    // Provide default query params for direct local testing.
+    // callpage_initializer.js reads URLSearchParams and requires target_id.
+    const url = new URL(window.location.href);
+    if (!url.searchParams.get("target_id")) url.searchParams.set("target_id", "u2");
+    if (!url.searchParams.get("use_camera")) url.searchParams.set("use_camera", "1");
+    if (!url.searchParams.get("is_caller")) url.searchParams.set("is_caller", "1");
+    if (url.href !== window.location.href) {
+      window.location.replace(url.toString());
+    }
+  </script>
+  <script type="module" src="../../src/webPageInit/callpage_initializer.js"></script>
+</body>
+</html>
