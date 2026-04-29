@@ -195,26 +195,22 @@ If we exclude the call-related components and focus only on the core modules inv
 ### 2.2.1 `webPageInit/`
 
 
-This layer contains `.js` files responsible for initializing:
 
-- initial UI state  
-- event logic  
-- WebSocket connections for real-time communication  
+This directory is responsible for **web page initialization**.  
+It can be considered as the **entry point for each web page**.
 
-Every webpage loads its corresponding initializer from this layer.
+Each file in this directory handles the setup logic required when a page is loaded.
 
 ---
 
 ### 2.2.2  **`event/`** 
 
-The entire front-end system is built as an event-driven system.  
-Any meaningful event — such as a user pressing the send button or an incoming call from another user — whether triggered by user input or by server-side updates, flows through this folder.
-
+This module embodies the core architectural rationale introduced in **Section 1.3.1**.
 
 Its responsibilities include:
 
 - provide functions for registering event handlers
-- dispatching events through the global event bus (`utils/eventBus.js`, Layer 10)
+- dispatching events through the global event bus (`utils/eventBus.js`)
 
 **`eventEmitter.js`**
 
@@ -363,58 +359,47 @@ Together, these modules separate connection management, coordination logic, and 
 
 ### 2.2.5 **`pages/`** 
 
+This module forms part of the core architectural rationale introduced in **Section 1.3.2**.
+
+This module is responsible for managing all UI-related state and serves as the **single source of truth** for the front-end system.
+
+It leverages the **UI State Synchronization via Adapter** mechanism introduced in **Section 1.3.2** to propagate state changes to the UI layer, ensuring that rendering remains a consistent and deterministic mapping from system state.
 
 
-The `pages/` directory is responsible for managing logical page states within the application.
-
-In this context, a *page* does not refer to a full browser reload or navigation to a different URL.  
-Instead, it represents a view within the same web page, implemented as part of a single, continuously loaded application.
-
-For example, the section of the interface that displays the list of posts is treated as a page in this model.
-
-For each file in this directory:
-
-- Global variables are defined to store the state of the corresponding page.
-- The file exposes functions responsible for managing page state transitions.
-- Page lifecycle logic is partially implemented through lifecycle-related handlers, such as:
-  - an **enter-page handler**, invoked when the page becomes active
-  - a **leave-page handler**, invoked when the page is exited
-
-At present, not all page modules fully conform to this structure.  
-Some pages implement only a subset of the intended lifecycle handlers, and for practical reasons, certain UI-related logic—such as the creation, cancellation, and submission of form-based pages—is still colocated within this layer.
-
-When a page state changes, functions in this layer may invoke functions defined in the `ui_controll/` directory (Layer 6) to update the user interface accordingly.
-
-As a future improvement, this layer is expected to be refactored so that it focuses exclusively on page state and lifecycle management.  
-UI-specific behavior should be further delegated to dedicated UI layers, and each page module should consistently define its own enter-page and leave-page handlers.
-
-
-
-
-By centralizing page state and lifecycle logic within this layer, the system maintains clear responsibility boundaries while allowing incremental refinement of the architecture over time.
 
 ---
 
 ### 2.2.6 **`useSelfData/`** 
-
+This module manages and provides access to data associated with the current user,  
+acting as a centralized interface for user-specific state within the system.
 ---
 
 ### 2.2.7 **`dataPool/`** 
+This module provides shared data sources that are accessed across different files within the `pages/` layer.
 
+It serves as a centralized repository for cross-page or globally relevant data, such as the online user list, ensuring consistency and avoiding redundant state duplication.
 ---
 
 ### 2.2.8  **`ui/`** 
 
+This module forms part of the core architectural rationale introduced in **Section 1.3.2**.
 
+It contains pure React-based UI components that are solely responsible for rendering.  
+These components do not handle business logic or state management, and instead rely on external state provided by the system.
 
 ---
 
 ### 2.2.9 **`service/`** 
 
+This module provides functions for uploading and downloading data from the server.
 
-This folder provides functions responsible for uploading data to and downloading data from the server.  
-It serves as a data processing layer that prepares data before sending it to the server and transforms
-server responses into formats usable by the application.
+It wraps the low-level API functions defined in `api/`, serving as an intermediary layer that:
+
+- Handles errors and exceptions from API calls  
+- Transforms server responses into application-level data structures  
+- Preprocesses request payloads before sending them  
+
+This design abstracts away raw API interactions, allowing higher-level modules to operate on clean and consistent data without depending on transport-level details.
 
 
 ---
@@ -428,35 +413,36 @@ Each function in this layer corresponds to a **single HTTP request** and is resp
 - sending it to the server,
 - receiving and returning the response.
 
-No UI logic, state management, or business logic is included in this layer.
+The entry points of this layer are `api.client.js` and `post_api.client.js`,  
+which determine whether to use real API calls or mock implementations based on the environment configuration.
 
-#### Structure
+For development and testing, mock implementations are provided within this layer to simulate server behavior.  
+The environment variable `VITE_APP_ENV` (configured via `fake_backend_env`) controls the switching logic:
 
-The API layer contains a **single folder**:
+- `test` → use mock functions (simulated server behavior)  
+- otherwise → use real API calls to the backend  
 
-- `api/`
+This design enables **transparent switching** between real and simulated backends, allowing higher-level modules to remain unchanged across different environments.
 
-Within this folder, API calls are organized **by file and function**.
+![front_end_api_graph](./images/2026-04-29-15-19-46.png)
 
-- `api.js` is responsible for handling **GET requests**  
-  (it is expected to be renamed in the future for clearer semantics).
-- `post_api.js` is responsible for handling **POST requests**.
+As illustrated in the diagram, `api/` consists of:
 
-Although GET and POST requests are implemented in separate files, all API-related logic is centralized within the same `api/` directory.
+- Two entry files: `api.client.js` and `post_api.client.js`, which control environment-based switching  
+- Two modules for real API communication: `api.js` and `post_api.js`  
+- Two mock API modules: `api.mock.js` and `post_api.mock.js`, which simulate server endpoints  
+- A mock data layer (`mock_db.js`) that serves as an in-memory data source  
+
+Currently, the API design supports only two HTTP methods: `GET` and `POST`.  
+Modules prefixed with `api.` handle `GET` requests, while those prefixed with `post_api.` handle `POST` requests.
 
 
 
 #### Error Handling
+The `api.js` and `post_api.js` modules validate server responses to ensure they are successful and well-formed.  
+If an abnormal or error response is detected, an exception is thrown.
 
-All API functions include network error handling logic.
-
-This error handling logic is encapsulated into shared helper functions and reused across API calls.  
-Individual API functions invoke these helpers rather than implementing error handling logic inline.
-
-When a network error occurs:
-- a corresponding **network error event** is emitted,
-- allowing upper layers to respond consistently through the event-driven system  
-  (e.g., showing error messages, triggering retries, or switching UI states).
+This allows the `service/` (introduced in section 2.2.9) to handle errors in a context-aware manner.
 
 
 ---
@@ -498,26 +484,6 @@ This change is straightforward and requires minimal effort.
 
 
 
----
-
-### 4.2 Call Structure — Layer Overview
----
-
-### 4.2.1 Call Structure — Layer 1: Web Pages
----
-
-**Dynamic HTML**
-
-This has the same meaning as the **Dynamic HTML** introduced in section 3.2.1.
-
----
-
-### 4.2.2 Call Structure — Layer 2: Web Page Initialization
----
-
-The content of this layer is identical to that described in section 3.2.2.
-
----
 
 ### 4.2.3 Call Structure — Layer 3: Call Core and Orchestration
 ---
@@ -593,26 +559,5 @@ This layer provides the interface and infrastructure components that support the
 
 
 
----
 
-### 4.2.5 Call Structure — Layer 5: Data Service
----
-
-The content of this layer is identical to that described in section 3.2.8.
-
----
-
-### 4.2.6 Call Structure — Layer 6: API
----
-
-The content of this layer is identical to that described in section 3.2.9.
-
----
-
-### 4.2.7 Call Structure — Layer 7: Tools
----
-
-The content of this layer is identical to that described in section 3.2.10.
-
-For the call system, `callEventBus.js` in this layer is used to propagate call-related events across different components.
 

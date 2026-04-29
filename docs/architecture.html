@@ -504,21 +504,16 @@ If we exclude the call-related components and focus only on the core modules inv
 <p><img src="./images/2026-04-29-11-18-28.png" alt="front_end_main_structure_graph"></p>
 <hr>
 <h3 id="221-webpageinit">2.2.1 <code>webPageInit/</code></h3>
-<p>This layer contains <code>.js</code> files responsible for initializing:</p>
-<ul>
-<li>initial UI state</li>
-<li>event logic</li>
-<li>WebSocket connections for real-time communication</li>
-</ul>
-<p>Every webpage loads its corresponding initializer from this layer.</p>
+<p>This directory is responsible for <strong>web page initialization</strong>.<br>
+It can be considered as the <strong>entry point for each web page</strong>.</p>
+<p>Each file in this directory handles the setup logic required when a page is loaded.</p>
 <hr>
 <h3 id="222--event">2.2.2  <strong><code>event/</code></strong></h3>
-<p>The entire front-end system is built as an event-driven system.<br>
-Any meaningful event — such as a user pressing the send button or an incoming call from another user — whether triggered by user input or by server-side updates, flows through this folder.</p>
+<p>This module embodies the core architectural rationale introduced in <strong>Section 1.3.1</strong>.</p>
 <p>Its responsibilities include:</p>
 <ul>
 <li>provide functions for registering event handlers</li>
-<li>dispatching events through the global event bus (<code>utils/eventBus.js</code>, Layer 10)</li>
+<li>dispatching events through the global event bus (<code>utils/eventBus.js</code>)</li>
 </ul>
 <p><strong><code>eventEmitter.js</code></strong></p>
 <p>This file attaches a global event listener to the entire document.</p>
@@ -661,38 +656,30 @@ Works well for messaging, notifications, and voice/video call signaling.</p>
 </ul>
 <hr>
 <h3 id="225-pages">2.2.5 <strong><code>pages/</code></strong></h3>
-<p>The <code>pages/</code> directory is responsible for managing logical page states within the application.</p>
-<p>In this context, a <em>page</em> does not refer to a full browser reload or navigation to a different URL.<br>
-Instead, it represents a view within the same web page, implemented as part of a single, continuously loaded application.</p>
-<p>For example, the section of the interface that displays the list of posts is treated as a page in this model.</p>
-<p>For each file in this directory:</p>
-<ul>
-<li>Global variables are defined to store the state of the corresponding page.</li>
-<li>The file exposes functions responsible for managing page state transitions.</li>
-<li>Page lifecycle logic is partially implemented through lifecycle-related handlers, such as:
-<ul>
-<li>an <strong>enter-page handler</strong>, invoked when the page becomes active</li>
-<li>a <strong>leave-page handler</strong>, invoked when the page is exited</li>
-</ul>
-</li>
-</ul>
-<p>At present, not all page modules fully conform to this structure.<br>
-Some pages implement only a subset of the intended lifecycle handlers, and for practical reasons, certain UI-related logic—such as the creation, cancellation, and submission of form-based pages—is still colocated within this layer.</p>
-<p>When a page state changes, functions in this layer may invoke functions defined in the <code>ui_controll/</code> directory (Layer 6) to update the user interface accordingly.</p>
-<p>As a future improvement, this layer is expected to be refactored so that it focuses exclusively on page state and lifecycle management.<br>
-UI-specific behavior should be further delegated to dedicated UI layers, and each page module should consistently define its own enter-page and leave-page handlers.</p>
-<p>By centralizing page state and lifecycle logic within this layer, the system maintains clear responsibility boundaries while allowing incremental refinement of the architecture over time.</p>
+<p>This module forms part of the core architectural rationale introduced in <strong>Section 1.3.2</strong>.</p>
+<p>This module is responsible for managing all UI-related state and serves as the <strong>single source of truth</strong> for the front-end system.</p>
+<p>It leverages the <strong>UI State Synchronization via Adapter</strong> mechanism introduced in <strong>Section 1.3.2</strong> to propagate state changes to the UI layer, ensuring that rendering remains a consistent and deterministic mapping from system state.</p>
 <hr>
 <h3 id="226-useselfdata">2.2.6 <strong><code>useSelfData/</code></strong></h3>
-<hr>
+<h2 id="this-module-manages-and-provides-access-to-data-associated-with-the-current-useracting-as-a-centralized-interface-for-user-specific-state-within-the-system">This module manages and provides access to data associated with the current user,<br>
+acting as a centralized interface for user-specific state within the system.</h2>
 <h3 id="227-datapool">2.2.7 <strong><code>dataPool/</code></strong></h3>
-<hr>
+<p>This module provides shared data sources that are accessed across different files within the <code>pages/</code> layer.</p>
+<h2 id="it-serves-as-a-centralized-repository-for-cross-page-or-globally-relevant-data-such-as-the-online-user-list-ensuring-consistency-and-avoiding-redundant-state-duplication">It serves as a centralized repository for cross-page or globally relevant data, such as the online user list, ensuring consistency and avoiding redundant state duplication.</h2>
 <h3 id="228--ui">2.2.8  <strong><code>ui/</code></strong></h3>
+<p>This module forms part of the core architectural rationale introduced in <strong>Section 1.3.2</strong>.</p>
+<p>It contains pure React-based UI components that are solely responsible for rendering.<br>
+These components do not handle business logic or state management, and instead rely on external state provided by the system.</p>
 <hr>
 <h3 id="229-service">2.2.9 <strong><code>service/</code></strong></h3>
-<p>This folder provides functions responsible for uploading data to and downloading data from the server.<br>
-It serves as a data processing layer that prepares data before sending it to the server and transforms
-server responses into formats usable by the application.</p>
+<p>This module provides functions for uploading and downloading data from the server.</p>
+<p>It wraps the low-level API functions defined in <code>api/</code>, serving as an intermediary layer that:</p>
+<ul>
+<li>Handles errors and exceptions from API calls</li>
+<li>Transforms server responses into application-level data structures</li>
+<li>Preprocesses request payloads before sending them</li>
+</ul>
+<p>This design abstracts away raw API interactions, allowing higher-level modules to operate on clean and consistent data without depending on transport-level details.</p>
 <hr>
 <h3 id="2210-api">2.2.10 <strong><code>api/</code></strong></h3>
 <p>This layer defines low-level API wrapper functions that directly communicate with server endpoints.</p>
@@ -702,13 +689,16 @@ server responses into formats usable by the application.</p>
 <li>sending it to the server,</li>
 <li>receiving and returning the response.</li>
 </ul>
-<p>No UI logic, state management, or business logic is included in this layer.</p>
-<h4 id="structure">Structure</h4>
-<p>The API layer contains a <strong>single folder</strong>:</p>
+<p>The entry points of this layer are <code>api.client.js</code> and <code>post_api.client.js</code>,<br>
+which determine whether to use real API calls or mock implementations based on the environment configuration.</p>
+<p>For development and testing, mock implementations are provided within this layer to simulate server behavior.<br>
+The environment variable <code>VITE_APP_ENV</code> (configured via <code>fake_backend_env</code>) controls the switching logic:</p>
 <ul>
-<li><code>api/</code></li>
+<li><code>test</code> → use mock functions (simulated server behavior)</li>
+<li>otherwise → use real API calls to the backend</li>
 </ul>
-<p>Within this folder, API calls are organized <strong>by file and function</strong>.</p>
+<p>This design enables <strong>transparent switching</strong> between real and simulated backends, allowing higher-level modules to remain unchanged across different environments.</p>
+<p><img src="./images/2026-04-29-15-19-46.png" alt="front_end_api_graph"></p>
 <ul>
 <li><code>api.js</code> is responsible for handling <strong>GET requests</strong><br>
 (it is expected to be renamed in the future for clearer semantics).</li>
