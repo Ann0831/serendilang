@@ -192,9 +192,8 @@ If we exclude the call-related components and focus only on the core modules inv
 
 ---
 
-### 3.2.2 Main Structure — Layer 2: Web Page Initialization
+### 2.2.1 `webPageInit/`
 
-**Folder:** `webPageInit/`
 
 This layer contains `.js` files responsible for initializing:
 
@@ -206,15 +205,7 @@ Every webpage loads its corresponding initializer from this layer.
 
 ---
 
-### 3.2.3 Main Structure — Layer 3: Event and Routing System
-
-Layer 3 contains two folders: **`event/`** and **`route/`**.  
-
-This layer acts as the **control layer** of the entire front-end architecture.
-
----
-
-**`event/` Folder**
+### 2.2.2  **`event/`** 
 
 The entire front-end system is built as an event-driven system.  
 Any meaningful event — such as a user pressing the send button or an incoming call from another user — whether triggered by user input or by server-side updates, flows through this folder.
@@ -224,8 +215,6 @@ Its responsibilities include:
 
 - provide functions for registering event handlers
 - dispatching events through the global event bus (`utils/eventBus.js`, Layer 10)
-
----
 
 **`eventEmitter.js`**
 
@@ -241,7 +230,6 @@ When a user interacts with the page (click, scroll, input, etc.), the listener r
 
 This creates a **declarative UI model** where components specify *what event should occur*, without knowing how it will be handled.
 
----
 
 **`handlers/` Subfolder**
 
@@ -256,27 +244,23 @@ Each handler:
 This design keeps event emission and event handling cleanly separated.
 
 ---
+### 2.2.3  **`route/`** 
 
-**`route/` Folder**
+
 
 for the main web page, there are a menu and pages, when user touches a menu button, the main screen switch to the page that it refers.
 In this folder, it defines id of each page and the logics of entering and leaving a page.
 
 ---
 
-### 3.2.4 Main Structure — Layer 4: WebSocket system
+### 2.2.4 **`wss/`** 
 
-This layer contains one folder:
-
-- `wss/`
 
 Serendilang is a real-time communication system. Users can exchange messages, send friend requests, receive notifications, and initiate voice or video calls.  
 To support this, the UI must react to server-side events immediately and consistently across all active tabs.
 
 The responsibility of this layer is to construct and manage the application's WebSocket object.  
 All low-level WebSocket actions—such as connecting, sending messages, and handling incoming events—are defined within this layer.
-
----
 
 **WebSocket Design Overview**
 
@@ -302,8 +286,6 @@ When a WebSocket object is created, it performs the following steps:
 4. **Server Event Distribution**  
    - When the server pushes an event over WebSocket, the leader broadcasts it to all follower instances using the same channel.
    - This ensures that every tab stays synchronized in real time.
-
----
 
 **Implementation Structure**
 
@@ -379,11 +361,9 @@ Together, these modules separate connection management, coordination logic, and 
 
 ---
 
-### 3.2.5 Main Structure — Layer 5: Pages
+### 2.2.5 **`pages/`** 
 
-This layer contains one folder:
 
-- `pages/`
 
 The `pages/` directory is responsible for managing logical page states within the application.
 
@@ -415,83 +395,31 @@ By centralizing page state and lifecycle logic within this layer, the system mai
 
 ---
 
-### 3.2.6 Main Structure — Layer 6: UI Control and User Context
+### 2.2.6 **`useSelfData/`** 
 
-This layer contains two folders:
+---
 
-- `user_identity/`  
-  This folder currently stores user context.  
-  It is expected to be renamed and further split into more specific modules in the future.
+### 2.2.7 **`dataPool/`** 
 
-  User-related data stored here includes:
-  - the list of users blocked by the current user
-  - native language
-  - target language
-  - username
-  - other user-level context required by the application
+---
 
-  User context data is initially empty at application startup.  
-  This layer provides accessor functions for reading user-related state.
+### 2.2.8  **`ui/`** 
 
-  When a read function is invoked and the corresponding global variable is not yet populated,
-  the function automatically triggers data fetching by calling the appropriate functions
-  in the Service Layer (Layer 8).  
-  Once retrieved from the server, the data is stored in this layer and reused for subsequent accesses.
-
-  This design enables lazy loading of user context while maintaining a centralized and consistent
-  source of truth for user-related state across the application.
-
-
-- `ui_controll/`  
-  This folder provides functions to create,manages and controls the state of UI components.
-
-  For example, the **renderPostCardWithLoading** async function in  
-  **ui_create/createPostCard.js** first renders a skeleton post UI component
-  (displaying a loading spinner) into the target container.  
-  Once the data is ready, it then creates and replaces it with the actual post UI component.
-  This layer does not define the actual structure or markup of UI components.  
-  Concrete UI implementations are defined in **Layer 7 (UI Components Creation)**, while this layer focuses on UI orchestration and state transitions.
 
 
 ---
 
-### 3.2.7 Main Structure — Layer 7: UI Components Creation
+### 2.2.9 **`service/`** 
 
-This layer contains one folder:
-
-- `ui_create/`
-
-This folder provides functions responsible for creating UI components, such as post cards and chat rooms.
-It focuses purely on component creation and does not manage UI state or business logic.
-
-For example, `createChatRoom.js` includes the following functions:
-
-- `createChatRoomSkeleton`  
-  Creates a chat room skeleton component that displays a loading spinner while data is being loaded.
-
-- `createChatRoom`  
-  Creates the complete chat room UI component.
-
-- `createBlockedChatRoomUI`  
-  Creates a chat room UI component that indicates the other user has been blocked by the current user.
-
----
-
-### 3.2.8 Main Structure — Layer 8: Data Service
-
-This layer contains one folder:
-
-- `service/`
 
 This folder provides functions responsible for uploading data to and downloading data from the server.  
 It serves as a data processing layer that prepares data before sending it to the server and transforms
 server responses into formats usable by the application.
 
-This layer relies on **Layer 9 (API layer)** to perform the actual API calls.
 
 ---
 
-### 3.2.9 Main Structure — Layer 9: API
+### 2.2.10 **`api/`** 
 
 This layer defines low-level API wrapper functions that directly communicate with server endpoints.
 
@@ -533,11 +461,8 @@ When a network error occurs:
 
 ---
 
-### 3.2.10 Main Structure — Layer 10: Tools
+### 2.2.11 **`utils/`** 
 
-This layer contains one folder:
-
-- `utils/`
 
 This folder provides shared utility tools that can be used across all layers of the application.
 
