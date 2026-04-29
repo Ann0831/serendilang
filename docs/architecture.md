@@ -370,14 +370,18 @@ It leverages the **UI State Synchronization via Adapter** mechanism introduced i
 ---
 
 ### 2.2.6 **`useSelfData/`** 
+
 This module manages and provides access to data associated with the current user,  
 acting as a centralized interface for user-specific state within the system.
+
 ---
 
 ### 2.2.7 **`dataPool/`** 
+
 This module provides shared data sources that are accessed across different files within the `pages/` layer.
 
 It serves as a centralized repository for cross-page or globally relevant data, such as the online user list, ensuring consistency and avoiding redundant state duplication.
+
 ---
 
 ### 2.2.8  **`ui/`** 
@@ -462,35 +466,21 @@ used to rank online users.
 
 ---
 
-## 4. Call Structure
-
-### 4.1 Call Structure — Introduction
-
-The main structure of the front-end is depicted in the graph below:
-
-![front_end_call_graph](./images/2025-12-29_4_08_40.png)
-
-The diagram follows the conventions described in Section 2.
-
-
-**Future Improvement**
-
-To further improve architectural clarity, the dependency edge from `webPages/` to `call/` is planned to be removed.
-
-Currently, this dependency exists due to the presence of a call bootstrap file within the `call/` directory.  
-As a future refactoring, this bootstrap file should be relocated to the `webPageInit/` directory, where web page initialization logic is intended to reside.  
-This change is straightforward and requires minimal effort.
 
 
 
+# 3. Call Structure
+
+# 3.1 Call Structure — Introduction
+
+This project includes voice and video call functionality.  
+This section focuses on the core modules involved in the call system.
+
+The call feature consists of components responsible for signaling, media handling, and real-time communication between users.  
+The subgraph derived from Figure 2.1 highlights the key modules that participate in establishing and maintaining a call session.
+![front_end_call_core_graph](./images/2026-04-29-17-26.png)
 
 
-### 4.2.3 Call Structure — Layer 3: Call Core and Orchestration
----
-
-This layer contains a single folder:
-
-- `call/`
 
 The `call/` folder contains the core orchestration logic of the call system, including the definition and management of the call lifecycle.  
 Its main components are as follows:

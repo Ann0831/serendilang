@@ -661,11 +661,13 @@ Works well for messaging, notifications, and voice/video call signaling.</p>
 <p>It leverages the <strong>UI State Synchronization via Adapter</strong> mechanism introduced in <strong>Section 1.3.2</strong> to propagate state changes to the UI layer, ensuring that rendering remains a consistent and deterministic mapping from system state.</p>
 <hr>
 <h3 id="226-useselfdata">2.2.6 <strong><code>useSelfData/</code></strong></h3>
-<h2 id="this-module-manages-and-provides-access-to-data-associated-with-the-current-useracting-as-a-centralized-interface-for-user-specific-state-within-the-system">This module manages and provides access to data associated with the current user,<br>
-acting as a centralized interface for user-specific state within the system.</h2>
+<p>This module manages and provides access to data associated with the current user,<br>
+acting as a centralized interface for user-specific state within the system.</p>
+<hr>
 <h3 id="227-datapool">2.2.7 <strong><code>dataPool/</code></strong></h3>
 <p>This module provides shared data sources that are accessed across different files within the <code>pages/</code> layer.</p>
-<h2 id="it-serves-as-a-centralized-repository-for-cross-page-or-globally-relevant-data-such-as-the-online-user-list-ensuring-consistency-and-avoiding-redundant-state-duplication">It serves as a centralized repository for cross-page or globally relevant data, such as the online user list, ensuring consistency and avoiding redundant state duplication.</h2>
+<p>It serves as a centralized repository for cross-page or globally relevant data, such as the online user list, ensuring consistency and avoiding redundant state duplication.</p>
+<hr>
 <h3 id="228--ui">2.2.8  <strong><code>ui/</code></strong></h3>
 <p>This module forms part of the core architectural rationale introduced in <strong>Section 1.3.2</strong>.</p>
 <p>It contains pure React-based UI components that are solely responsible for rendering.<br>
@@ -699,22 +701,19 @@ The environment variable <code>VITE_APP_ENV</code> (configured via <code>fake_ba
 </ul>
 <p>This design enables <strong>transparent switching</strong> between real and simulated backends, allowing higher-level modules to remain unchanged across different environments.</p>
 <p><img src="./images/2026-04-29-15-19-46.png" alt="front_end_api_graph"></p>
+<p>As illustrated in the diagram, <code>api/</code> consists of:</p>
 <ul>
-<li><code>api.js</code> is responsible for handling <strong>GET requests</strong><br>
-(it is expected to be renamed in the future for clearer semantics).</li>
-<li><code>post_api.js</code> is responsible for handling <strong>POST requests</strong>.</li>
+<li>Two entry files: <code>api.client.js</code> and <code>post_api.client.js</code>, which control environment-based switching</li>
+<li>Two modules for real API communication: <code>api.js</code> and <code>post_api.js</code></li>
+<li>Two mock API modules: <code>api.mock.js</code> and <code>post_api.mock.js</code>, which simulate server endpoints</li>
+<li>A mock data layer (<code>mock_db.js</code>) that serves as an in-memory data source</li>
 </ul>
-<p>Although GET and POST requests are implemented in separate files, all API-related logic is centralized within the same <code>api/</code> directory.</p>
+<p>Currently, the API design supports only two HTTP methods: <code>GET</code> and <code>POST</code>.<br>
+Modules prefixed with <code>api.</code> handle <code>GET</code> requests, while those prefixed with <code>post_api.</code> handle <code>POST</code> requests.</p>
 <h4 id="error-handling">Error Handling</h4>
-<p>All API functions include network error handling logic.</p>
-<p>This error handling logic is encapsulated into shared helper functions and reused across API calls.<br>
-Individual API functions invoke these helpers rather than implementing error handling logic inline.</p>
-<p>When a network error occurs:</p>
-<ul>
-<li>a corresponding <strong>network error event</strong> is emitted,</li>
-<li>allowing upper layers to respond consistently through the event-driven system<br>
-(e.g., showing error messages, triggering retries, or switching UI states).</li>
-</ul>
+<p>The <code>api.js</code> and <code>post_api.js</code> modules validate server responses to ensure they are successful and well-formed.<br>
+If an abnormal or error response is detected, an exception is thrown.</p>
+<p>This allows the <code>service/</code> (introduced in section 2.2.9) to handle errors in a context-aware manner.</p>
 <hr>
 <h3 id="2211-utils">2.2.11 <strong><code>utils/</code></strong></h3>
 <p>This folder provides shared utility tools that can be used across all layers of the application.</p>
@@ -724,34 +723,13 @@ event-dispatching mechanism. All parts of the application emit events and regist
 helpers. For example, <code>calcOnlineUserScore.js</code> provides functions for calculating priority scores
 used to rank online users.</p>
 <hr>
-<h2 id="4-call-structure">4. Call Structure</h2>
-<h3 id="41-call-structure--introduction">4.1 Call Structure — Introduction</h3>
-<p>The main structure of the front-end is depicted in the graph below:</p>
-<p><img src="./images/2025-12-29_4_08_40.png" alt="front_end_call_graph"></p>
-<p>The diagram follows the conventions described in Section 2.</p>
-<p><strong>Future Improvement</strong></p>
-<p>To further improve architectural clarity, the dependency edge from <code>webPages/</code> to <code>call/</code> is planned to be removed.</p>
-<p>Currently, this dependency exists due to the presence of a call bootstrap file within the <code>call/</code> directory.<br>
-As a future refactoring, this bootstrap file should be relocated to the <code>webPageInit/</code> directory, where web page initialization logic is intended to reside.<br>
-This change is straightforward and requires minimal effort.</p>
-<hr>
-<h3 id="42-call-structure--layer-overview">4.2 Call Structure — Layer Overview</h3>
-<hr>
-<h3 id="421-call-structure--layer-1-web-pages">4.2.1 Call Structure — Layer 1: Web Pages</h3>
-<hr>
-<p><strong>Dynamic HTML</strong></p>
-<p>This has the same meaning as the <strong>Dynamic HTML</strong> introduced in section 3.2.1.</p>
-<hr>
-<h3 id="422-call-structure--layer-2-web-page-initialization">4.2.2 Call Structure — Layer 2: Web Page Initialization</h3>
-<hr>
-<p>The content of this layer is identical to that described in section 3.2.2.</p>
-<hr>
-<h3 id="423-call-structure--layer-3-call-core-and-orchestration">4.2.3 Call Structure — Layer 3: Call Core and Orchestration</h3>
-<hr>
-<p>This layer contains a single folder:</p>
-<ul>
-<li><code>call/</code></li>
-</ul>
+<h1 id="3-call-structure">3. Call Structure</h1>
+<h1 id="31-call-structure--introduction">3.1 Call Structure — Introduction</h1>
+<p>This project includes voice and video call functionality.<br>
+This section focuses on the core modules involved in the call system.</p>
+<p>The call feature consists of components responsible for signaling, media handling, and real-time communication between users.<br>
+The subgraph derived from Figure 2.1 highlights the key modules that participate in establishing and maintaining a call session.
+<img src="./images/2026-04-29-17-26.png" alt="front_end_call_core_graph"></p>
 <p>The <code>call/</code> folder contains the core orchestration logic of the call system, including the definition and management of the call lifecycle.<br>
 Its main components are as follows:</p>
 <ul>
@@ -821,19 +799,6 @@ This file registers event handlers on the <code>RTCPeerConnection</code> instanc
 </ul>
 </li>
 </ul>
-<hr>
-<h3 id="425-call-structure--layer-5-data-service">4.2.5 Call Structure — Layer 5: Data Service</h3>
-<hr>
-<p>The content of this layer is identical to that described in section 3.2.8.</p>
-<hr>
-<h3 id="426-call-structure--layer-6-api">4.2.6 Call Structure — Layer 6: API</h3>
-<hr>
-<p>The content of this layer is identical to that described in section 3.2.9.</p>
-<hr>
-<h3 id="427-call-structure--layer-7-tools">4.2.7 Call Structure — Layer 7: Tools</h3>
-<hr>
-<p>The content of this layer is identical to that described in section 3.2.10.</p>
-<p>For the call system, <code>callEventBus.js</code> in this layer is used to propagate call-related events across different components.</p>
 
 </body>
 </html>
