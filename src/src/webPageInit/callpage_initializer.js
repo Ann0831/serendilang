@@ -53,7 +53,18 @@ async function bootstrapCallPage() {
     targetId,
     enableCamera: useCamera,
   };
+  console.log("[call-init] before registerCallPageEventHandlers");
+  registerCallPageEventHandlers();
+  console.log("[call-init] after registerCallPageEventHandlers");
+
+  console.log("[call-init] before initCallPage", {
+    targetId,
+    isCaller,
+    isApp,
+    useCamera,
+  });
   initCallPage();
+  console.log("[call-init] after initCallPage");
 
   if (!targetId) {
     showCallInitError("Missing target_id");
@@ -77,8 +88,6 @@ async function bootstrapCallPage() {
     const wsBaseUrl = `${wsProto}//${window.location.host}/`;
     initializeWss(wsBaseUrl, { type: "normal" });
   }
-
-  registerCallPageEventHandlers();
   registerPeerEvents();
 
   if (window.__IS_CALLER__ === true) {

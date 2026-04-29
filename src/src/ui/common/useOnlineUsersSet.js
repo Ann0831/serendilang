@@ -1,20 +1,10 @@
-import { useEffect, useState } from "react";
-import { getOnlineUsersSnapshot, subscribeOnlineUsersPool } from "../../dataPool/onlineUsersPool.js";
-
-function toOnlineSet(snapshot) {
-  const ids = (snapshot?.list || []).map((x) => String(x?.userId || "")).filter(Boolean);
-  return new Set(ids);
-}
+import { useMemo } from "react";
+import { useSubscribedState } from "../StateViewBase.jsx";
 
 export function useOnlineUsersSet() {
-  const [onlineIds, setOnlineIds] = useState(() => toOnlineSet(getOnlineUsersSnapshot()));
-
-  useEffect(() => {
-    return subscribeOnlineUsersPool((snapshot) => {
-      setOnlineIds(toOnlineSet(snapshot));
-    });
-  }, []);
-
-  return onlineIds;
+  const s = useSubscribedState("OnlineUsersIndex", { ids: [] });
+  const ids = Array.isArray(s?.ids) ? s.ids : [];
+  return useMemo(() => {
+    return new Set(ids.map((id) => String(id || "")).filter(Boolean));
+  }, [ids]);
 }
-

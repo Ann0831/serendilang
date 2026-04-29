@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { eventBus } from "../../utils/eventBus.js";
 import { useSubscribedState } from "../StateViewBase.jsx";
-import { getOnlineUsersSnapshot, subscribeOnlineUsersPool } from "../../dataPool/onlineUsersPool.js";
+import { useOnlineUsersSet } from "../common/useOnlineUsersSet.js";
 import { formatLanguageName } from "../../utils/language/languageDisplay.js";
 import { toAvatarSrc } from "../common/avatarSrc.js";
 import AvatarImage from "../common/AvatarImage.jsx";
@@ -483,17 +483,7 @@ export default function ChatRoomsContainer() {
   const active = Array.isArray(s.activeChatRooms) ? s.activeChatRooms : [];
   const hidden = Array.isArray(s.hiddenChatRooms) ? s.hiddenChatRooms : [];
   const meta = s.chatRoomMeta || {};
-  const [onlineIds, setOnlineIds] = useState(() => {
-    const snapshot = getOnlineUsersSnapshot();
-    return new Set((snapshot?.list || []).map((x) => String(x?.userId || "")));
-  });
-
-  useEffect(() => {
-    return subscribeOnlineUsersPool((snapshot) => {
-      const ids = (snapshot?.list || []).map((x) => String(x?.userId || ""));
-      setOnlineIds(new Set(ids));
-    });
-  }, []);
+  const onlineIds = useOnlineUsersSet();
 
   return (
     <>

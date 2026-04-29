@@ -104,6 +104,16 @@ function ensureSidebarUiMounted() {
 }
 
 function pushOnlineUsersState(next) {
+  const ids = (Array.isArray(next) ? next : [])
+    .map((u) => String(u?.userId || ""))
+    .filter(Boolean);
+
+  updateState("OnlineUsersIndex", {
+    ids,
+    total: ids.length,
+    updatedAt: Date.now(),
+  });
+
   updateState("OnlineUsersSidebar", {
     loading,
     initialized,

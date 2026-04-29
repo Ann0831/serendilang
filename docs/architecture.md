@@ -1,6 +1,6 @@
 # Front-End System Overview
 
-## 1. Introduction
+# 1. Introduction
 
 Serendilang is a language exchange social platform that supports real-time video calls, text-based chat, post creation, likes, and friend connections.  
 Any user on the platform can initiate a call with another user, which introduces additional security and safety considerations at the system design level.
@@ -10,156 +10,182 @@ The system is designed with extensibility in mind and can be further extended to
 
 ---
 
-### 1.1 Platform Overview and Design Considerations
+## 1.1 Platform Overview and Design Considerations
 
 Due to the open nature of user-to-user communication, Serendilang incorporates reporting and blocking mechanisms for end users, as well as administrative controls that allow moderators to ban users or remove posts that violate community guidelines.
 
-These requirements increase functional complexity in areas such as real-time communication, event handling, and state consistency, without fundamentally altering the underlying system architecture.
+These requirements increase functional complexity in areas such as real-time communication, event handling, and state consistency.
 
 ---
 
-### 1.2 System Complexity and Architectural Challenges
+## 1.2 System Complexity and Architectural Challenges
 
-The front-end system of Serendilang currently consists of approximately 20,000 lines of source code, reflecting the complexity of its real-time communication features, event-driven architecture, and user-facing interactions.
+The front-end system of Serendilang currently consists of approximately 20,000 lines of source code, reflecting the complexity of its real-time communication features, and user-facing interactions.
 
 Designing, maintaining, and preserving the scalability of such a system requires careful attention to system-level architecture, including clear separation of responsibilities, predictable execution flow, and long-term maintainability under continuous feature evolution.
 
 ---
 
-### 1.3 Architectural Approach and Design Rationale
+## 1.3 Architectural Approach and Design Rationale
 
-To address these challenges, the front-end system is built using a multi-layer, self-defined architectural framework based on **HTML, JavaScript (ES6 modules), and TailwindCSS**.
+To address these challenges, the front-end system is built using **React**, along with **HTML**, **JavaScript (ES6 modules)**, and **TailwindCSS**, following a set of self-defined architectural conventions.
 
-The multi-layer design assigns each layer a clearly defined category of responsibility, with strict dependency rules: each layer may only depend on layers beneath it.  
-This structure enforces a unidirectional flow of control and prevents implicit coupling across abstraction boundaries.
+---
 
-In this design, application state and state transition logic are owned by higher-level layers, independent of any specific rendering or execution technology. 
-Lower layers are responsible for interpreting state-derived intents and carrying out concrete execution tasks, including UI rendering, DOM mutation, and interactions with external data APIs.
+### Core Architectural Principles
 
-The front-end system described in this document is implemented without reliance on external front-end frameworks or framework-like runtimes.
+#### 1.3.1 State Machine–Driven Architecture
 
-As a result, the mapping from state changes to observable effects is explicitly defined by the system, rather than implicitly handled by a framework- or framework-like managed runtime.
+The front-end system is modeled as a **state machine**, where state transitions are triggered by:
 
-Importantly, the absence of a framework or framework-like dependency in this system does not preclude the future adoption of frameworks or framework-like solutions.
+- **User interactions** (e.g., UI events)  
+- **Server-side real-time updates** (e.g., WebSocket messages)  
+- **Internal system events** (e.g., network errors during fetch) 
 
-Because application state and state transition logic reside in higher architectural layers, the responsibility for interpreting state and producing UI behavior is isolated within dedicated UI control and UI creation layers.
-
-As a result, the mechanism responsible for transforming state into concrete UI can be replaced without affecting the overall system design. 
-In particular, the system can be adapted to a `React-based` web implementation by delegating the responsibilities currently handled by the UI control and UI creation layers to React’s rendering pipeline.
-
-Similarly, the same architectural approach can be adapted to a mobile application implemented using `React Native` by integrating a native rendering backend. 
-
-While developing a mobile application inherently differs from building a web application, requiring certain adjustments at higher architectural levels, these changes remain limited in scope. 
-The overall design philosophy—particularly the separation of state ownership, control flow, and execution responsibilities—remains consistent across platforms, even though specific structural details may vary to accommodate platform-specific interaction models, application lifecycles, and execution environments.
+All state-changing events are unified and decoupled through a centralized event system: **`eventBus.js`**.
 
 
+#### Centralized Event System (eventBus)
+
+The implementation is as follows:
+
+```javascript
+const listeners = {}; 
+
+export const eventBus = {
+  on(event, callback) {
+    if (!listeners[event]) listeners[event] = [];
+    listeners[event].push(callback);
+  },
+
+  off(event, callback) {
+    if (!listeners[event]) return;
+    listeners[event] = listeners[event].filter(cb => cb !== callback);
+  },
+
+  emit(event, ...args) {   
+    if (!listeners[event]) return;
+    listeners[event].forEach(cb => cb(...args)); 
+  }
+};
+```
+During application initialization, all relevant events are registered and mapped to their corresponding handlers.
+
+UI components are kept lightweight and decoupled—they only detect user interactions and emit events via `eventBus.emit(...)`, without directly handling business logic.
+
+---
+
+#### 1.3.2 Separation of System State and UI Rendering
+
+To maintain a clear separation of concerns, the system adopts an architecture where **UI component hook parameters are treated as derived copies of a subset of the system state**, rather than the source of truth.
+
+In this design, all UI-related state is maintained in a centralized system layer outside of React components.  
+The hook parameters inside each UI component act only as **synchronized snapshots** of that state.
+
+When the underlying system state changes, a dedicated update mechanism propagates those changes to the corresponding React components by updating their hook parameters, triggering re-rendering.
+
+In other words, the UI does not own state—it simply reflects it:
+
+**UI ≈ f(system state), where hook state is a synchronized replica, not the source of truth**
+
+#### UI State Synchronization via Adapter
+
+To bridge the system state and the UI layer, a dedicated adapter module, **`uiStateAdapter.js`**, is used.
+The following are the two most important functions in `uiStateAdapter.js`:
+```javascript
+export function subscribe(id, handler) {
+  if (!handlers.has(id)) {
+    handlers.set(id, new Set());
+  }
+  handlers.get(id).add(handler);
+  if (id in globalState) {
+    handler(globalState[id]);
+  }
+
+  return () => {
+    const set = handlers.get(id);
+    if (!set) return;
+
+    set.delete(handler);
+    if (set.size === 0) {
+      handlers.delete(id);
+    }
+  };
+}
+
+export function updateState(id, next) {
+  const prev = globalState[id];
+  const value =
+    typeof next === 'function'
+      ? next(prev)
+      : next;
+
+  globalState[id] = value;
+
+  const set = handlers.get(id);
+  if (set && set.size > 0) {
+    for (const handler of set) {
+      handler(value);
+    }
+  }
+}
+```
+
+Every UI component (built with React) uses the following function defined in `StateViewBase.jsx`.  
+This allows non-UI modules to directly update the component’s hook state by calling `updateState` from `uiStateAdapter.js`.
+
+```javascript
+import { subscribe, getState } from "../utils/uiStateAdapter.js";
+import React, { useEffect, useMemo, useState } from "react";
+import { ensureUiI18nRuntime } from "./i18n/uiI18nRuntime.js";
+
+export function useSubscribedState(id, fallback = {}) {
+  const [state, setState] = useState(() => getState(id) || fallback);
+
+  useEffect(() => {
+    ensureUiI18nRuntime();
+  }, []);
+
+  useEffect(() => {
+    return subscribe(id, (next) => {
+      setState(next || fallback);
+    });
+  }, [id]);
+
+  return state;
+}
+
+
+```
+
+---
+
+## 2. Detailed Description
+
+### 2.1 Overall Structure
+
+All `.html` files for the application are centrally placed in the `webPages` directory.
+The diagram below illustrates the complete `js/jsx` system that is utilized by `webPages`.Each `.html` file within `webPages` primarily relies on an entry `.js` file located in `webPagesInit`.  This entry file serves as the initialization point, responsible for bootstrapping the corresponding page and connecting it to the underlying system architecture.
+
+![front_end_main_graph](./images/2026-04-28-15-55.png)
+
+In this diagram, each node represents a folder.
+
+A directed edge from node A to node B indicates that **at least one file in folder A depends on a file in folder B**.
+The graph is topologically sorted.  
+Therefore, dependencies only flow downward — folders positioned lower in the diagram do not depend on those positioned above them.
 
 
 
 
 ---
 
-### Notes on Implementation Fidelity
+## 2.2 Main Structure
 
-While the architecture described in this document reflects the overall structure and design principles of the system, a small number of implementation details may not strictly follow the documented design due to iterative development.
-
-These deviations are limited in scope and can be easily refactored to fully align with the system architecture when needed.
-
-In addition, there are a few areas where the current implementation diverges more significantly from the intended design.  
-These cases have been identified as targets for future refactoring and are expected to be addressable without major structural changes.
-
-Overall, the system remains well-aligned with the documented architecture, and the identified deviations represent manageable, incremental improvements rather than fundamental design issues.
+This project includes voice and video call functionality.  
+If we exclude the call-related components and focus only on the core modules involved in standard website operation, the subgraph derived from Figure 2.1 is shown below:
 
 
-
----
-
-## 2. Modeling and Structure
-
-In this document, the front-end (i.e., the overall front-end codebase) is modeled as a collection of code units that are delivered from the server and executed by the browser at runtime.
-A front-end code unit (hereafter referred to as a code unit) is defined as a piece of code that is delivered from the server and executed by the browser as a single file at runtime.
-
-
-To support this perspective, the architecture diagrams use the following conventions.
-
-### Diagram Conventions 
-
-In the architecture diagrams below, each node represents a collection of code that forms a subset of the overall front-end codebase.
-
-#### Node Naming
-
-- A node named with a trailing `/` (e.g., `example/`) represents the collection of all files contained in a directory that physically exists on the server.  
-  This directory is exposed to the frontend via server-side static asset delivery (e.g., through an Express-based static serving mechanism).  
-  The browser can directly download resources from this directory at runtime.
-
-
-- A node named with a file extension (e.g., `example.js` or `folder/example.js`) represents a collection consisting of a single source file that physically exists on the server.  
-  This file is served to the frontend as a static asset and is downloaded and executed by the browser as an individual front-end code unit.
-
-- A node without a file extension and without a trailing slash represents a collection of dynamically generated code units.  
-  Such nodes do not correspond to a physical file or directory on the server. Instead, they represent code that is generated dynamically by server and delivered to the browser as part of a response.
-
-Throughout the diagrams in this document, nodes sharing the same name are defined to represent the same collection of code units.
-
-
-#### Edges
-
-Edges in the diagram represent dependency relationships between code collections.  
-If a code unit in node A depends on a code unit in node B during browser execution, an edge is drawn from node A to node B.
-
-
-
-
-### Structural Overview
-
-Based on this modeling approach, the front-end system is composed of two major structural parts:
-
-- **Main Structure**
-- **Call Structure**
-
-The **Main Structure** is responsible for the core functionality of the application, including page navigation, UI rendering, event handling, data flow, and user interaction logic.  
-It covers most user-facing features such as posts, chat rooms, profiles, and general UI state management.
-
-The **Call Structure** is dedicated to real-time voice and video communication.  
-It encapsulates call-related logic such as call state management, signaling, media handling, and real-time synchronization, and is designed to operate independently from the main UI flow while still integrating with the overall event-driven system.
-
-By separating the front-end into these two structures, the system maintains clear responsibility boundaries while remaining flexible enough to support real-time communication features without overloading the main application logic.
-
-
----
-
-## 3. Main Structure
-
-### 3.1 Main Structure — Introduction
-
-The main structure of the front-end is depicted in the graph below:
-
-![front_end_main_graph](./images/2025-12-27_13_00_56.png)
-
-The diagram follows the conventions described in Section 2.
-
-
----
-
-### 3.2 Main Structure — Layer Overview
-
-The main structure of the front-end architecture is organized into ten layers with clearly defined responsibilities.  
-This layered design serves as the backbone of the system, providing modularity, predictable dependency flow, and long-term maintainability.
-
----
-
-### 3.2.1 Main Structure — Layer 1: Web Pages
-
-**Folder:** `webPages/`
-
-This folder contains raw `.html` files that are directly accessible to users.
-
-**Dynamic HTML**
-
-In some cases, when a user visits a web page, the HTML returned by the backend is dynamically generated at runtime rather than served as a static file.  
-Such HTML responses are collectively referred to as **Dynamic HTML**.
-All dynamically generated HTML is carefully processed and sanitized to prevent injection attacks (e.g., XSS), ensuring that only validated and escaped content is rendered to the client.
- 
 
 ---
 

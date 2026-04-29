@@ -3,10 +3,7 @@ import { eventBus } from "../../utils/eventBus.js";
 import { useSubscribedState } from "../StateViewBase.jsx";
 import { toAvatarSrc, UI_DEFAULT_AVATAR_SRC } from "../common/avatarSrc.js";
 import AvatarImage from "../common/AvatarImage.jsx";
-import { getChatMessages } from "../../service/getChatRoomData.js";
-import { sendMessageData } from "../../service/sendMessageData.js";
 import { formatLanguageName } from "../../utils/language/languageDisplay.js";
-import { sendWssMessage_wssCenter } from "../../wss/wssCenter.js";
 import { formatChatSeparatorDateTime } from "../../utils/dateTimeFormat.js";
 import { safeNaviagate } from "../../utils/safeNavigate.js";
 
@@ -173,6 +170,8 @@ export default function CallRuntimePage() {
   const inputRef = useRef(null);
   const chatFetchAmountRef = useRef("50");
   const chatLoadMoreLockRef = useRef(false);
+  const chatReqSeqRef = useRef(0);
+  const chatPendingLoadsRef = useRef(new Map());
   const didAutoScrollOnOpenRef = useRef(false);
   const prevFirstMessageIdRef = useRef("");
   const prevLastMessageIdRef = useRef("");
@@ -187,14 +186,39 @@ export default function CallRuntimePage() {
     ? (splitLeftRight ? "w-1/2 h-full border-l border-gray-200" : "w-full h-1/2 border-t border-gray-200")
     : "hidden";
 
+  const nextChatRequestId = () => {
+    chatReqSeqRef.current += 1;
+    return `call-chat-${Date.now()}-${chatReqSeqRef.current}`;
+  };
+
   const loadChatMessages = async ({ amount = chatFetchAmountRef.current, merge = false } = {}) => {
     if (!canShowChat) return;
     if (merge) setChatLoadingMore(true);
     else setChatLoading(true);
+    const requestId = nextChatRequestId();
+    console.log("[call-ui] chat load start", {
+      requestId,
+      targetId: safeTargetId,
+      amount,
+      merge,
+      canShowChat,
+    });
     try {
       const normalizedAmount = normalizeFetchAmount(amount);
-      const rows = await getChatMessages(safeTargetId, normalizedAmount);
+      const rows = await new Promise((resolve, reject) => {
+        chatPendingLoadsRef.current.set(requestId, { resolve, reject });
+        eventBus.emit("callPage:chatLoadRequested", {
+          request_id: requestId,
+          target_id: safeTargetId,
+          amount: normalizedAmount,
+          from: "ui/call/chatLoad",
+        });
+      });
       const normalized = normalizeMessagesWithTailSent(Array.isArray(rows) ? rows : []);
+      console.log("[call-ui] chat load resolved", {
+        requestId,
+        rows: Array.isArray(rows) ? rows.length : -1,
+      });
       chatFetchAmountRef.current = normalizedAmount;
       if (!merge) {
         setChatRows(normalized);
@@ -207,9 +231,15 @@ export default function CallRuntimePage() {
         });
         if (!grew) setChatHasMore(false);
       }
+    } catch (err) {
+      console.warn("[call-ui] loadChatMessages failed:", err);
     } finally {
       if (merge) setChatLoadingMore(false);
       else setChatLoading(false);
+      console.log("[call-ui] chat load end", {
+        requestId,
+        merge,
+      });
     }
   };
 
@@ -254,6 +284,56 @@ export default function CallRuntimePage() {
       eventBus.off("callPage:chatSyncRequested", onChatSyncRequested);
     };
   }, [canShowChat, safeTargetId]);
+
+  useEffect(() => {
+    const onLoaded = (params = {}) => {
+      const requestId = String(params?.request_id || "");
+      if (!requestId) return;
+      const rec = chatPendingLoadsRef.current.get(requestId);
+      if (!rec) return;
+      chatPendingLoadsRef.current.delete(requestId);
+      rec.resolve(Array.isArray(params?.rows) ? params.rows : []);
+    };
+
+    const onLoadFailed = (params = {}) => {
+      const requestId = String(params?.request_id || "");
+      if (!requestId) return;
+      const rec = chatPendingLoadsRef.current.get(requestId);
+      if (!rec) return;
+      chatPendingLoadsRef.current.delete(requestId);
+      rec.reject(params?.error || new Error("chat_load_failed"));
+    };
+
+    const onSendSucceeded = (params = {}) => {
+      const pendingId = String(params?.pending_id || "");
+      if (!pendingId) return;
+      setChatRows((prev) => prev.filter((m) => String(m?.message_id || "") !== pendingId));
+      void loadChatMessages({ amount: chatFetchAmountRef.current, merge: false });
+    };
+
+    const onSendFailed = (params = {}) => {
+      const pendingId = String(params?.pending_id || "");
+      if (!pendingId) return;
+      setChatRows((prev) => prev.map((m) => (
+        m?.message_id === pendingId ? { ...m, deliveryStatus: "failed" } : m
+      )));
+    };
+
+    eventBus.on("callPage:chatLoaded", onLoaded);
+    eventBus.on("callPage:chatLoadFailed", onLoadFailed);
+    eventBus.on("callPage:chatSendSucceeded", onSendSucceeded);
+    eventBus.on("callPage:chatSendFailed", onSendFailed);
+    return () => {
+      eventBus.off("callPage:chatLoaded", onLoaded);
+      eventBus.off("callPage:chatLoadFailed", onLoadFailed);
+      eventBus.off("callPage:chatSendSucceeded", onSendSucceeded);
+      eventBus.off("callPage:chatSendFailed", onSendFailed);
+      for (const [, rec] of chatPendingLoadsRef.current.entries()) {
+        rec.reject(new Error("chat_load_cancelled"));
+      }
+      chatPendingLoadsRef.current.clear();
+    };
+  }, [safeTargetId, canShowChat]);
 
   useEffect(() => {
     if (didAutoScrollOnOpenRef.current) return;
@@ -334,16 +414,12 @@ export default function CallRuntimePage() {
     setShowEmojiMenu(false);
     setChatRows((prev) => [...prev, { message_id: pendingId, fromSelf: true, text, deliveryStatus: "pending" }]);
 
-    const res = await sendMessageData(safeTargetId, text);
-    if (res?.result === "success") {
-      sendWssMessage_wssCenter("sendChatRoomMessage", { fromwhom: null, towhom: safeTargetId });
-      void loadChatMessages();
-      return;
-    }
-
-    setChatRows((prev) => prev.map((m) => (
-      m?.message_id === pendingId ? { ...m, deliveryStatus: "failed" } : m
-    )));
+    eventBus.emit("callPage:chatSendRequested", {
+      target_id: safeTargetId,
+      text,
+      pending_id: pendingId,
+      from: "ui/call/sendMessage",
+    });
   };
 
   const onChatScroll = async (e) => {

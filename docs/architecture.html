@@ -1,0 +1,951 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>architecture.md</title>
+<meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+
+<style>
+/* https://github.com/microsoft/vscode/blob/master/extensions/markdown-language-features/media/markdown.css */
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+body {
+	font-family: var(--vscode-markdown-font-family, -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif);
+	font-size: var(--vscode-markdown-font-size, 14px);
+	padding: 0 26px;
+	line-height: var(--vscode-markdown-line-height, 22px);
+	word-wrap: break-word;
+}
+
+#code-csp-warning {
+	position: fixed;
+	top: 0;
+	right: 0;
+	color: white;
+	margin: 16px;
+	text-align: center;
+	font-size: 12px;
+	font-family: sans-serif;
+	background-color:#444444;
+	cursor: pointer;
+	padding: 6px;
+	box-shadow: 1px 1px 1px rgba(0,0,0,.25);
+}
+
+#code-csp-warning:hover {
+	text-decoration: none;
+	background-color:#007acc;
+	box-shadow: 2px 2px 2px rgba(0,0,0,.25);
+}
+
+body.scrollBeyondLastLine {
+	margin-bottom: calc(100vh - 22px);
+}
+
+body.showEditorSelection .code-line {
+	position: relative;
+}
+
+body.showEditorSelection .code-active-line:before,
+body.showEditorSelection .code-line:hover:before {
+	content: "";
+	display: block;
+	position: absolute;
+	top: 0;
+	left: -12px;
+	height: 100%;
+}
+
+body.showEditorSelection li.code-active-line:before,
+body.showEditorSelection li.code-line:hover:before {
+	left: -30px;
+}
+
+.vscode-light.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(0, 0, 0, 0.15);
+}
+
+.vscode-light.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(0, 0, 0, 0.40);
+}
+
+.vscode-light.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+.vscode-dark.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(255, 255, 255, 0.4);
+}
+
+.vscode-dark.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(255, 255, 255, 0.60);
+}
+
+.vscode-dark.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+.vscode-high-contrast.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(255, 160, 0, 0.7);
+}
+
+.vscode-high-contrast.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(255, 160, 0, 1);
+}
+
+.vscode-high-contrast.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+img {
+	max-width: 100%;
+	max-height: 100%;
+}
+
+a {
+	text-decoration: none;
+}
+
+a:hover {
+	text-decoration: underline;
+}
+
+a:focus,
+input:focus,
+select:focus,
+textarea:focus {
+	outline: 1px solid -webkit-focus-ring-color;
+	outline-offset: -1px;
+}
+
+hr {
+	border: 0;
+	height: 2px;
+	border-bottom: 2px solid;
+}
+
+h1 {
+	padding-bottom: 0.3em;
+	line-height: 1.2;
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+}
+
+h1, h2, h3 {
+	font-weight: normal;
+}
+
+table {
+	border-collapse: collapse;
+}
+
+table > thead > tr > th {
+	text-align: left;
+	border-bottom: 1px solid;
+}
+
+table > thead > tr > th,
+table > thead > tr > td,
+table > tbody > tr > th,
+table > tbody > tr > td {
+	padding: 5px 10px;
+}
+
+table > tbody > tr + tr > td {
+	border-top: 1px solid;
+}
+
+blockquote {
+	margin: 0 7px 0 5px;
+	padding: 0 16px 0 10px;
+	border-left-width: 5px;
+	border-left-style: solid;
+}
+
+code {
+	font-family: Menlo, Monaco, Consolas, "Droid Sans Mono", "Courier New", monospace, "Droid Sans Fallback";
+	font-size: 1em;
+	line-height: 1.357em;
+}
+
+body.wordWrap pre {
+	white-space: pre-wrap;
+}
+
+pre:not(.hljs),
+pre.hljs code > div {
+	padding: 16px;
+	border-radius: 3px;
+	overflow: auto;
+}
+
+pre code {
+	color: var(--vscode-editor-foreground);
+	tab-size: 4;
+}
+
+/** Theming */
+
+.vscode-light pre {
+	background-color: rgba(220, 220, 220, 0.4);
+}
+
+.vscode-dark pre {
+	background-color: rgba(10, 10, 10, 0.4);
+}
+
+.vscode-high-contrast pre {
+	background-color: rgb(0, 0, 0);
+}
+
+.vscode-high-contrast h1 {
+	border-color: rgb(0, 0, 0);
+}
+
+.vscode-light table > thead > tr > th {
+	border-color: rgba(0, 0, 0, 0.69);
+}
+
+.vscode-dark table > thead > tr > th {
+	border-color: rgba(255, 255, 255, 0.69);
+}
+
+.vscode-light h1,
+.vscode-light hr,
+.vscode-light table > tbody > tr + tr > td {
+	border-color: rgba(0, 0, 0, 0.18);
+}
+
+.vscode-dark h1,
+.vscode-dark hr,
+.vscode-dark table > tbody > tr + tr > td {
+	border-color: rgba(255, 255, 255, 0.18);
+}
+
+</style>
+
+<style>
+/* Tomorrow Theme */
+/* http://jmblog.github.com/color-themes-for-google-code-highlightjs */
+/* Original theme - https://github.com/chriskempson/tomorrow-theme */
+
+/* Tomorrow Comment */
+.hljs-comment,
+.hljs-quote {
+	color: #8e908c;
+}
+
+/* Tomorrow Red */
+.hljs-variable,
+.hljs-template-variable,
+.hljs-tag,
+.hljs-name,
+.hljs-selector-id,
+.hljs-selector-class,
+.hljs-regexp,
+.hljs-deletion {
+	color: #c82829;
+}
+
+/* Tomorrow Orange */
+.hljs-number,
+.hljs-built_in,
+.hljs-builtin-name,
+.hljs-literal,
+.hljs-type,
+.hljs-params,
+.hljs-meta,
+.hljs-link {
+	color: #f5871f;
+}
+
+/* Tomorrow Yellow */
+.hljs-attribute {
+	color: #eab700;
+}
+
+/* Tomorrow Green */
+.hljs-string,
+.hljs-symbol,
+.hljs-bullet,
+.hljs-addition {
+	color: #718c00;
+}
+
+/* Tomorrow Blue */
+.hljs-title,
+.hljs-section {
+	color: #4271ae;
+}
+
+/* Tomorrow Purple */
+.hljs-keyword,
+.hljs-selector-tag {
+	color: #8959a8;
+}
+
+.hljs {
+	display: block;
+	overflow-x: auto;
+	color: #4d4d4c;
+	padding: 0.5em;
+}
+
+.hljs-emphasis {
+	font-style: italic;
+}
+
+.hljs-strong {
+	font-weight: bold;
+}
+</style>
+
+<style>
+/*
+ * Markdown PDF CSS
+ */
+
+ body {
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif, "Meiryo";
+	padding: 0 12px;
+}
+
+pre {
+	background-color: #f8f8f8;
+	border: 1px solid #cccccc;
+	border-radius: 3px;
+	overflow-x: auto;
+	white-space: pre-wrap;
+	overflow-wrap: break-word;
+}
+
+pre:not(.hljs) {
+	padding: 23px;
+	line-height: 19px;
+}
+
+blockquote {
+	background: rgba(127, 127, 127, 0.1);
+	border-color: rgba(0, 122, 204, 0.5);
+}
+
+.emoji {
+	height: 1.4em;
+}
+
+code {
+	font-size: 14px;
+	line-height: 19px;
+}
+
+/* for inline code */
+:not(pre):not(.hljs) > code {
+	color: #C9AE75; /* Change the old color so it seems less like an error */
+	font-size: inherit;
+}
+
+/* Page Break : use <div class="page"/> or <div class="page"></div> to insert page break
+-------------------------------------------------------- */
+.page {
+	page-break-after: always;
+}
+
+</style>
+
+<script src="https://unpkg.com/mermaid/dist/mermaid.min.js"></script>
+</head>
+<body>
+  <script>
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: document.body.classList.contains('vscode-dark') || document.body.classList.contains('vscode-high-contrast')
+          ? 'dark'
+          : 'default'
+    });
+  </script>
+<h1 id="front-end-system-overview">Front-End System Overview</h1>
+<h1 id="1-introduction">1. Introduction</h1>
+<p>Serendilang is a language exchange social platform that supports real-time video calls, text-based chat, post creation, likes, and friend connections.<br>
+Any user on the platform can initiate a call with another user, which introduces additional security and safety considerations at the system design level.</p>
+<p>At present, Serendilang is implemented as a web-based application.<br>
+The system is designed with extensibility in mind and can be further extended to mobile applications in the future.</p>
+<hr>
+<h2 id="11-platform-overview-and-design-considerations">1.1 Platform Overview and Design Considerations</h2>
+<p>Due to the open nature of user-to-user communication, Serendilang incorporates reporting and blocking mechanisms for end users, as well as administrative controls that allow moderators to ban users or remove posts that violate community guidelines.</p>
+<p>These requirements increase functional complexity in areas such as real-time communication, event handling, and state consistency.</p>
+<hr>
+<h2 id="12-system-complexity-and-architectural-challenges">1.2 System Complexity and Architectural Challenges</h2>
+<p>The front-end system of Serendilang currently consists of approximately 20,000 lines of source code, reflecting the complexity of its real-time communication features, and user-facing interactions.</p>
+<p>Designing, maintaining, and preserving the scalability of such a system requires careful attention to system-level architecture, including clear separation of responsibilities, predictable execution flow, and long-term maintainability under continuous feature evolution.</p>
+<hr>
+<h2 id="13-architectural-approach-and-design-rationale">1.3 Architectural Approach and Design Rationale</h2>
+<p>To address these challenges, the front-end system is built using <strong>React</strong>, along with <strong>HTML</strong>, <strong>JavaScript (ES6 modules)</strong>, and <strong>TailwindCSS</strong>, following a set of self-defined architectural conventions.</p>
+<hr>
+<h3 id="core-architectural-principles">Core Architectural Principles</h3>
+<h4 id="131-state-machinedriven-architecture">1.3.1 State Machine–Driven Architecture</h4>
+<p>The front-end system is modeled as a <strong>state machine</strong>, where state transitions are triggered by:</p>
+<ul>
+<li><strong>User interactions</strong> (e.g., UI events)</li>
+<li><strong>Server-side real-time updates</strong> (e.g., WebSocket messages)</li>
+<li><strong>Internal system events</strong> (e.g., network errors during fetch)</li>
+</ul>
+<p>All state-changing events are unified and decoupled through a centralized event system: <strong><code>eventBus.js</code></strong>.</p>
+<h4 id="centralized-event-system-eventbus">Centralized Event System (eventBus)</h4>
+<p>The implementation is as follows:</p>
+<pre class="hljs"><code><div><span class="hljs-keyword">const</span> listeners = {}; 
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> eventBus = {
+  <span class="hljs-title function_">on</span>(<span class="hljs-params">event, callback</span>) {
+    <span class="hljs-keyword">if</span> (!listeners[event]) listeners[event] = [];
+    listeners[event].<span class="hljs-title function_">push</span>(callback);
+  },
+
+  <span class="hljs-title function_">off</span>(<span class="hljs-params">event, callback</span>) {
+    <span class="hljs-keyword">if</span> (!listeners[event]) <span class="hljs-keyword">return</span>;
+    listeners[event] = listeners[event].<span class="hljs-title function_">filter</span>(<span class="hljs-function"><span class="hljs-params">cb</span> =&gt;</span> cb !== callback);
+  },
+
+  <span class="hljs-title function_">emit</span>(<span class="hljs-params">event, ...args</span>) {   
+    <span class="hljs-keyword">if</span> (!listeners[event]) <span class="hljs-keyword">return</span>;
+    listeners[event].<span class="hljs-title function_">forEach</span>(<span class="hljs-function"><span class="hljs-params">cb</span> =&gt;</span> <span class="hljs-title function_">cb</span>(...args)); 
+  }
+};
+</div></code></pre>
+<p>During application initialization, all relevant events are registered and mapped to their corresponding handlers.</p>
+<p>UI components are kept lightweight and decoupled—they only detect user interactions and emit events via <code>eventBus.emit(...)</code>, without directly handling business logic.</p>
+<hr>
+<h4 id="132-separation-of-system-state-and-ui-rendering">1.3.2 Separation of System State and UI Rendering</h4>
+<p>To maintain a clear separation of concerns, the system adopts an architecture where <strong>UI component hook parameters are treated as derived copies of a subset of the system state</strong>, rather than the source of truth.</p>
+<p>In this design, all UI-related state is maintained in a centralized system layer outside of React components.<br>
+The hook parameters inside each UI component act only as <strong>synchronized snapshots</strong> of that state.</p>
+<p>When the underlying system state changes, a dedicated update mechanism propagates those changes to the corresponding React components by updating their hook parameters, triggering re-rendering.</p>
+<p>In other words, the UI does not own state—it simply reflects it:</p>
+<p><strong>UI ≈ f(system state), where hook state is a synchronized replica, not the source of truth</strong></p>
+<h4 id="ui-state-synchronization-via-adapter">UI State Synchronization via Adapter</h4>
+<p>To bridge the system state and the UI layer, a dedicated adapter module, <strong><code>uiStateAdapter.js</code></strong>, is used.
+The following are the two most important functions in <code>uiStateAdapter.js</code>:</p>
+<pre class="hljs"><code><div><span class="hljs-keyword">export</span> <span class="hljs-keyword">function</span> <span class="hljs-title function_">subscribe</span>(<span class="hljs-params">id, handler</span>) {
+  <span class="hljs-keyword">if</span> (!handlers.<span class="hljs-title function_">has</span>(id)) {
+    handlers.<span class="hljs-title function_">set</span>(id, <span class="hljs-keyword">new</span> <span class="hljs-title class_">Set</span>());
+  }
+  handlers.<span class="hljs-title function_">get</span>(id).<span class="hljs-title function_">add</span>(handler);
+  <span class="hljs-keyword">if</span> (id <span class="hljs-keyword">in</span> globalState) {
+    <span class="hljs-title function_">handler</span>(globalState[id]);
+  }
+
+  <span class="hljs-keyword">return</span> <span class="hljs-function">() =&gt;</span> {
+    <span class="hljs-keyword">const</span> set = handlers.<span class="hljs-title function_">get</span>(id);
+    <span class="hljs-keyword">if</span> (!set) <span class="hljs-keyword">return</span>;
+
+    set.<span class="hljs-title function_">delete</span>(handler);
+    <span class="hljs-keyword">if</span> (set.<span class="hljs-property">size</span> === <span class="hljs-number">0</span>) {
+      handlers.<span class="hljs-title function_">delete</span>(id);
+    }
+  };
+}
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">function</span> <span class="hljs-title function_">updateState</span>(<span class="hljs-params">id, next</span>) {
+  <span class="hljs-keyword">const</span> prev = globalState[id];
+  <span class="hljs-keyword">const</span> value =
+    <span class="hljs-keyword">typeof</span> next === <span class="hljs-string">&#x27;function&#x27;</span>
+      ? <span class="hljs-title function_">next</span>(prev)
+      : next;
+
+  globalState[id] = value;
+
+  <span class="hljs-keyword">const</span> set = handlers.<span class="hljs-title function_">get</span>(id);
+  <span class="hljs-keyword">if</span> (set &amp;&amp; set.<span class="hljs-property">size</span> &gt; <span class="hljs-number">0</span>) {
+    <span class="hljs-keyword">for</span> (<span class="hljs-keyword">const</span> handler <span class="hljs-keyword">of</span> set) {
+      <span class="hljs-title function_">handler</span>(value);
+    }
+  }
+}
+</div></code></pre>
+<p>Every UI component (built with React) uses the following function defined in <code>StateViewBase.jsx</code>.<br>
+This allows non-UI modules to directly update the component’s hook state by calling <code>updateState</code> from <code>uiStateAdapter.js</code>.</p>
+<pre class="hljs"><code><div><span class="hljs-keyword">import</span> { subscribe, getState } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;../utils/uiStateAdapter.js&quot;</span>;
+<span class="hljs-keyword">import</span> <span class="hljs-title class_">React</span>, { useEffect, useMemo, useState } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;react&quot;</span>;
+<span class="hljs-keyword">import</span> { ensureUiI18nRuntime } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;./i18n/uiI18nRuntime.js&quot;</span>;
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">function</span> <span class="hljs-title function_">useSubscribedState</span>(<span class="hljs-params">id, fallback = {}</span>) {
+  <span class="hljs-keyword">const</span> [state, setState] = <span class="hljs-title function_">useState</span>(<span class="hljs-function">() =&gt;</span> <span class="hljs-title function_">getState</span>(id) || fallback);
+
+  <span class="hljs-title function_">useEffect</span>(<span class="hljs-function">() =&gt;</span> {
+    <span class="hljs-title function_">ensureUiI18nRuntime</span>();
+  }, []);
+
+  <span class="hljs-title function_">useEffect</span>(<span class="hljs-function">() =&gt;</span> {
+    <span class="hljs-keyword">return</span> <span class="hljs-title function_">subscribe</span>(id, <span class="hljs-function">(<span class="hljs-params">next</span>) =&gt;</span> {
+      <span class="hljs-title function_">setState</span>(next || fallback);
+    });
+  }, [id]);
+
+  <span class="hljs-keyword">return</span> state;
+}
+
+
+</div></code></pre>
+<hr>
+<h2 id="2-detailed-description">2. Detailed Description</h2>
+<h3 id="21-overall-structure">2.1 Overall Structure</h3>
+<p>All <code>.html</code> files for the application are centrally placed in the <code>webPages</code> directory.
+The diagram below illustrates the complete <code>js/jsx</code> system that is utilized by <code>webPages</code>.Each <code>.html</code> file within <code>webPages</code> primarily relies on an entry <code>.js</code> file located in <code>webPagesInit</code>.  This entry file serves as the initialization point, responsible for bootstrapping the corresponding page and connecting it to the underlying system architecture.</p>
+<p><img src="./images/2026-04-28-15-55.png" alt="front_end_main_graph"></p>
+<p>In this diagram, each node represents a folder.</p>
+<p>A directed edge from node A to node B indicates that <strong>at least one file in folder A depends on a file in folder B</strong>.
+The graph is topologically sorted.<br>
+Therefore, dependencies only flow downward — folders positioned lower in the diagram do not depend on those positioned above them.</p>
+<h3 id="structural-overview">Structural Overview</h3>
+<p>Based on this modeling approach, the front-end system is composed of two major structural parts:</p>
+<ul>
+<li><strong>Main Structure</strong></li>
+<li><strong>Call Structure</strong></li>
+</ul>
+<p>The <strong>Main Structure</strong> is responsible for the core functionality of the application, including page navigation, UI rendering, event handling, data flow, and user interaction logic.<br>
+It covers most user-facing features such as posts, chat rooms, profiles, and general UI state management.</p>
+<p>The <strong>Call Structure</strong> is dedicated to real-time voice and video communication.<br>
+It encapsulates call-related logic such as call state management, signaling, media handling, and real-time synchronization, and is designed to operate independently from the main UI flow while still integrating with the overall event-driven system.</p>
+<p>By separating the front-end into these two structures, the system maintains clear responsibility boundaries while remaining flexible enough to support real-time communication features without overloading the main application logic.</p>
+<hr>
+<h2 id="3-main-structure">3. Main Structure</h2>
+<h3 id="31-main-structure--introduction">3.1 Main Structure — Introduction</h3>
+<p>The main structure of the front-end is depicted in the graph below:</p>
+<p>The diagram follows the conventions described in Section 2.</p>
+<hr>
+<h3 id="32-main-structure--layer-overview">3.2 Main Structure — Layer Overview</h3>
+<p>The main structure of the front-end architecture is organized into ten layers with clearly defined responsibilities.<br>
+This layered design serves as the backbone of the system, providing modularity, predictable dependency flow, and long-term maintainability.</p>
+<hr>
+<h3 id="321-main-structure--layer-1-web-pages">3.2.1 Main Structure — Layer 1: Web Pages</h3>
+<p><strong>Folder:</strong> <code>webPages/</code></p>
+<p>This folder contains raw <code>.html</code> files that are directly accessible to users.</p>
+<p><strong>Dynamic HTML</strong></p>
+<p>In some cases, when a user visits a web page, the HTML returned by the backend is dynamically generated at runtime rather than served as a static file.<br>
+Such HTML responses are collectively referred to as <strong>Dynamic HTML</strong>.
+All dynamically generated HTML is carefully processed and sanitized to prevent injection attacks (e.g., XSS), ensuring that only validated and escaped content is rendered to the client.</p>
+<hr>
+<h3 id="322-main-structure--layer-2-web-page-initialization">3.2.2 Main Structure — Layer 2: Web Page Initialization</h3>
+<p><strong>Folder:</strong> <code>webPageInit/</code></p>
+<p>This layer contains <code>.js</code> files responsible for initializing:</p>
+<ul>
+<li>initial UI state</li>
+<li>event logic</li>
+<li>WebSocket connections for real-time communication</li>
+</ul>
+<p>Every webpage loads its corresponding initializer from this layer.</p>
+<hr>
+<h3 id="323-main-structure--layer-3-event-and-routing-system">3.2.3 Main Structure — Layer 3: Event and Routing System</h3>
+<p>Layer 3 contains two folders: <strong><code>event/</code></strong> and <strong><code>route/</code></strong>.</p>
+<p>This layer acts as the <strong>control layer</strong> of the entire front-end architecture.</p>
+<hr>
+<p><strong><code>event/</code> Folder</strong></p>
+<p>The entire front-end system is built as an event-driven system.<br>
+Any meaningful event — such as a user pressing the send button or an incoming call from another user — whether triggered by user input or by server-side updates, flows through this folder.</p>
+<p>Its responsibilities include:</p>
+<ul>
+<li>provide functions for registering event handlers</li>
+<li>dispatching events through the global event bus (<code>utils/eventBus.js</code>, Layer 10)</li>
+</ul>
+<hr>
+<p><strong><code>eventEmitter.js</code></strong></p>
+<p>This file attaches a global event listener to the entire document.</p>
+<p>Every UI component that can trigger an event includes a <code>dataset.actionList</code> property—an array of action objects describing:</p>
+<ul>
+<li>the action type</li>
+<li>the event name</li>
+<li>optional parameters</li>
+</ul>
+<p>When a user interacts with the page (click, scroll, input, etc.), the listener reads <code>actionList</code> and emits appropriate events through the event bus.</p>
+<p>This creates a <strong>declarative UI model</strong> where components specify <em>what event should occur</em>, without knowing how it will be handled.</p>
+<hr>
+<p><strong><code>handlers/</code> Subfolder</strong></p>
+<p>This subfolder contains all event handling modules.</p>
+<p>Each handler:</p>
+<ol>
+<li>imports the event bus</li>
+<li>registers callbacks for specific event names via the event bus (<code>utils/eventBus.js</code>, Layer 10)</li>
+</ol>
+<p>This design keeps event emission and event handling cleanly separated.</p>
+<hr>
+<p><strong><code>route/</code> Folder</strong></p>
+<p>for the main web page, there are a menu and pages, when user touches a menu button, the main screen switch to the page that it refers.
+In this folder, it defines id of each page and the logics of entering and leaving a page.</p>
+<hr>
+<h3 id="324-main-structure--layer-4-websocket-system">3.2.4 Main Structure — Layer 4: WebSocket system</h3>
+<p>This layer contains one folder:</p>
+<ul>
+<li><code>wss/</code></li>
+</ul>
+<p>Serendilang is a real-time communication system. Users can exchange messages, send friend requests, receive notifications, and initiate voice or video calls.<br>
+To support this, the UI must react to server-side events immediately and consistently across all active tabs.</p>
+<p>The responsibility of this layer is to construct and manage the application's WebSocket object.<br>
+All low-level WebSocket actions—such as connecting, sending messages, and handling incoming events—are defined within this layer.</p>
+<hr>
+<p><strong>WebSocket Design Overview</strong></p>
+<p>The WebSocket system implements a <strong>shared connection architecture</strong> to minimize unnecessary WebSocket connections to the server.</p>
+<p>When a WebSocket object is created, it performs the following steps:</p>
+<ol>
+<li>
+<p><strong>Leader Detection</strong></p>
+<ul>
+<li>It checks <code>localStorage</code> and <code>BroadcastChannel</code> to determine if another tab has already established a WebSocket connection.</li>
+<li>If no active leader exists, the new object becomes the <em>leader</em> and opens the WebSocket connection to the server.</li>
+</ul>
+</li>
+<li>
+<p><strong>Follower Mode</strong></p>
+<ul>
+<li>If a leader WebSocket object already exists, the new instance enters <em>follower mode</em>, meaning:
+<ul>
+<li>It does <strong>not</strong> open a WebSocket connection to the server.</li>
+<li>It communicates with the leader through a <code>BroadcastChannel</code>.</li>
+<li>The leader relays all messages to and from the server on behalf of all follower tabs.</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>Message Routing</strong></p>
+<ul>
+<li>Messages produced by the application (e.g., sending chat messages, accepting friend requests, initiating calls) are dispatched through this layer’s WebSocket object.</li>
+<li>In leader mode: messages are sent directly to the server.</li>
+<li>In follower mode: messages are broadcast to the leader tab for forwarding.</li>
+</ul>
+</li>
+<li>
+<p><strong>Server Event Distribution</strong></p>
+<ul>
+<li>When the server pushes an event over WebSocket, the leader broadcasts it to all follower instances using the same channel.</li>
+<li>This ensures that every tab stays synchronized in real time.</li>
+</ul>
+</li>
+</ol>
+<hr>
+<p><strong>Implementation Structure</strong></p>
+<p>The <code>wss/</code> folder contains three core modules, each responsible for a specific aspect of the shared WebSocket system:</p>
+<ul>
+<li>
+<p><strong><code>wssCenter.js</code></strong><br>
+Serves as the central manager of the entire WebSocket system.</p>
+<p>This module maintains the global WebSocket abstraction, referred to as the <em>Virtual WSS</em>.<br>
+The Virtual WSS is not a native <code>WebSocket</code> instance created via <code>new WebSocket(url)</code>. Instead, it represents a unified logical WebSocket interface that may internally operate in either leader or follower mode.</p>
+<p>The Virtual WSS object is stored as a global variable within this module.<br>
+<code>wssCenter.js</code> is responsible for initializing the Virtual WSS, resetting or reinitializing it when necessary, and providing accessor functions to retrieve the current active instance.</p>
+<p>By centralizing WebSocket lifecycle management and global state in this module, the system ensures consistent behavior across all tabs while avoiding redundant WebSocket connections.</p>
+</li>
+<li>
+<p><strong><code>createVirtualWss.js</code></strong><br>
+Responsible for constructing the Virtual WebSocket abstraction (<em>Virtual WSS</em>).</p>
+<p>This module exposes the <code>createVirtualWss</code> factory function, which creates a unified WebSocket-like interface shared across browser tabs.<br>
+The returned object behaves similarly to a native <code>WebSocket</code> instance from the perspective of upper layers, while internally coordinating leader–follower roles and inter-tab communication.</p>
+<p>Upon creation, each Virtual WSS instance:</p>
+<ul>
+<li>Generates a unique tab identifier.</li>
+<li>Initializes a <code>BroadcastChannel</code> for cross-tab communication.</li>
+<li>Checks persisted heartbeat information in <code>localStorage</code> to determine whether an existing leader is active.</li>
+</ul>
+<p>The module implements a <strong>leader election mechanism</strong> based on:</p>
+<ul>
+<li>Periodic heartbeats stored in <code>localStorage</code>.</li>
+<li>Cross-tab signaling via <code>BroadcastChannel</code>.</li>
+<li>A lightweight lock mechanism to avoid race conditions during leader takeover.</li>
+</ul>
+<p>When operating in <strong>leader mode</strong>, the Virtual WSS:</p>
+<ul>
+<li>Creates and maintains the real native <code>WebSocket</code> connection to the server.</li>
+<li>Forwards incoming server messages to all follower tabs via <code>BroadcastChannel</code>.</li>
+<li>Periodically emits heartbeat signals to indicate liveness.</li>
+</ul>
+<p>When operating in <strong>follower mode</strong>, the Virtual WSS:</p>
+<ul>
+<li>Does not create a native <code>WebSocket</code> connection.</li>
+<li>Relays outgoing messages to the leader via <code>BroadcastChannel</code>.</li>
+<li>Receives server events indirectly from the leader and exposes them through the same WebSocket-like interface.</li>
+</ul>
+<p>This module also integrates with the event-driven system by emitting system-level events (e.g., WebSocket disconnection or leader failure) through the global event bus, allowing higher layers to react appropriately.</p>
+<p>By encapsulating leader election, heartbeat monitoring, and inter-tab coordination within this factory, <code>createVirtualWss.js</code> enables a scalable, resilient, and connection-efficient WebSocket architecture without exposing its internal complexity to the rest of the application.</p>
+</li>
+<li>
+<p><strong><code>wssController.js</code></strong><br>
+Provides the <code>sendWssMessage</code> and <code>setupWssHandlers</code> functions.</p>
+<p>The <code>sendWssMessage</code> function is responsible for sending messages through a given WebSocket abstraction (i.e., the Virtual WSS).<br>
+The <code>setupWssHandlers</code> function registers and binds WebSocket-related event handlers to the provided WebSocket instance, enabling the system to react to incoming messages and connection state changes.</p>
+</li>
+</ul>
+<p>Together, these modules separate connection management, coordination logic, and application-facing control flow, allowing the WebSocket system to remain modular, predictable, and scalable across multiple browser tabs.</p>
+<hr>
+<p><strong>Benefits of This Architecture</strong></p>
+<ul>
+<li>
+<p><strong>Only one WebSocket connection per user per browser</strong><br>
+Reduces server load and avoids duplicated connections.</p>
+</li>
+<li>
+<p><strong>Automatic multi-tab synchronization</strong><br>
+All tabs remain state-consistent without requiring polling or extra logic.</p>
+</li>
+<li>
+<p><strong>Centralized WebSocket logic</strong><br>
+Higher-level layers do not need to manage socket lifecycles—they simply call this layer’s methods.</p>
+</li>
+<li>
+<p><strong>Scalable for future features</strong><br>
+Works well for messaging, notifications, and voice/video call signaling.</p>
+</li>
+</ul>
+<hr>
+<h3 id="325-main-structure--layer-5-pages">3.2.5 Main Structure — Layer 5: Pages</h3>
+<p>This layer contains one folder:</p>
+<ul>
+<li><code>pages/</code></li>
+</ul>
+<p>The <code>pages/</code> directory is responsible for managing logical page states within the application.</p>
+<p>In this context, a <em>page</em> does not refer to a full browser reload or navigation to a different URL.<br>
+Instead, it represents a view within the same web page, implemented as part of a single, continuously loaded application.</p>
+<p>For example, the section of the interface that displays the list of posts is treated as a page in this model.</p>
+<p>For each file in this directory:</p>
+<ul>
+<li>Global variables are defined to store the state of the corresponding page.</li>
+<li>The file exposes functions responsible for managing page state transitions.</li>
+<li>Page lifecycle logic is partially implemented through lifecycle-related handlers, such as:
+<ul>
+<li>an <strong>enter-page handler</strong>, invoked when the page becomes active</li>
+<li>a <strong>leave-page handler</strong>, invoked when the page is exited</li>
+</ul>
+</li>
+</ul>
+<p>At present, not all page modules fully conform to this structure.<br>
+Some pages implement only a subset of the intended lifecycle handlers, and for practical reasons, certain UI-related logic—such as the creation, cancellation, and submission of form-based pages—is still colocated within this layer.</p>
+<p>When a page state changes, functions in this layer may invoke functions defined in the <code>ui_controll/</code> directory (Layer 6) to update the user interface accordingly.</p>
+<p>As a future improvement, this layer is expected to be refactored so that it focuses exclusively on page state and lifecycle management.<br>
+UI-specific behavior should be further delegated to dedicated UI layers, and each page module should consistently define its own enter-page and leave-page handlers.</p>
+<p>By centralizing page state and lifecycle logic within this layer, the system maintains clear responsibility boundaries while allowing incremental refinement of the architecture over time.</p>
+<hr>
+<h3 id="326-main-structure--layer-6-ui-control-and-user-context">3.2.6 Main Structure — Layer 6: UI Control and User Context</h3>
+<p>This layer contains two folders:</p>
+<ul>
+<li>
+<p><code>user_identity/</code><br>
+This folder currently stores user context.<br>
+It is expected to be renamed and further split into more specific modules in the future.</p>
+<p>User-related data stored here includes:</p>
+<ul>
+<li>the list of users blocked by the current user</li>
+<li>native language</li>
+<li>target language</li>
+<li>username</li>
+<li>other user-level context required by the application</li>
+</ul>
+<p>User context data is initially empty at application startup.<br>
+This layer provides accessor functions for reading user-related state.</p>
+<p>When a read function is invoked and the corresponding global variable is not yet populated,
+the function automatically triggers data fetching by calling the appropriate functions
+in the Service Layer (Layer 8).<br>
+Once retrieved from the server, the data is stored in this layer and reused for subsequent accesses.</p>
+<p>This design enables lazy loading of user context while maintaining a centralized and consistent
+source of truth for user-related state across the application.</p>
+</li>
+<li>
+<p><code>ui_controll/</code><br>
+This folder provides functions to create,manages and controls the state of UI components.</p>
+<p>For example, the <strong>renderPostCardWithLoading</strong> async function in<br>
+<strong>ui_create/createPostCard.js</strong> first renders a skeleton post UI component
+(displaying a loading spinner) into the target container.<br>
+Once the data is ready, it then creates and replaces it with the actual post UI component.
+This layer does not define the actual structure or markup of UI components.<br>
+Concrete UI implementations are defined in <strong>Layer 7 (UI Components Creation)</strong>, while this layer focuses on UI orchestration and state transitions.</p>
+</li>
+</ul>
+<hr>
+<h3 id="327-main-structure--layer-7-ui-components-creation">3.2.7 Main Structure — Layer 7: UI Components Creation</h3>
+<p>This layer contains one folder:</p>
+<ul>
+<li><code>ui_create/</code></li>
+</ul>
+<p>This folder provides functions responsible for creating UI components, such as post cards and chat rooms.
+It focuses purely on component creation and does not manage UI state or business logic.</p>
+<p>For example, <code>createChatRoom.js</code> includes the following functions:</p>
+<ul>
+<li>
+<p><code>createChatRoomSkeleton</code><br>
+Creates a chat room skeleton component that displays a loading spinner while data is being loaded.</p>
+</li>
+<li>
+<p><code>createChatRoom</code><br>
+Creates the complete chat room UI component.</p>
+</li>
+<li>
+<p><code>createBlockedChatRoomUI</code><br>
+Creates a chat room UI component that indicates the other user has been blocked by the current user.</p>
+</li>
+</ul>
+<hr>
+<h3 id="328-main-structure--layer-8-data-service">3.2.8 Main Structure — Layer 8: Data Service</h3>
+<p>This layer contains one folder:</p>
+<ul>
+<li><code>service/</code></li>
+</ul>
+<p>This folder provides functions responsible for uploading data to and downloading data from the server.<br>
+It serves as a data processing layer that prepares data before sending it to the server and transforms
+server responses into formats usable by the application.</p>
+<p>This layer relies on <strong>Layer 9 (API layer)</strong> to perform the actual API calls.</p>
+<hr>
+<h3 id="329-main-structure--layer-9-api">3.2.9 Main Structure — Layer 9: API</h3>
+<p>This layer defines low-level API wrapper functions that directly communicate with server endpoints.</p>
+<p>Each function in this layer corresponds to a <strong>single HTTP request</strong> and is responsible only for:</p>
+<ul>
+<li>constructing the request,</li>
+<li>sending it to the server,</li>
+<li>receiving and returning the response.</li>
+</ul>
+<p>No UI logic, state management, or business logic is included in this layer.</p>
+<h4 id="structure">Structure</h4>
+<p>The API layer contains a <strong>single folder</strong>:</p>
+<ul>
+<li><code>api/</code></li>
+</ul>
+<p>Within this folder, API calls are organized <strong>by file and function</strong>.</p>
+<ul>
+<li><code>api.js</code> is responsible for handling <strong>GET requests</strong><br>
+(it is expected to be renamed in the future for clearer semantics).</li>
+<li><code>post_api.js</code> is responsible for handling <strong>POST requests</strong>.</li>
+</ul>
+<p>Although GET and POST requests are implemented in separate files, all API-related logic is centralized within the same <code>api/</code> directory.</p>
+<h4 id="error-handling">Error Handling</h4>
+<p>All API functions include network error handling logic.</p>
+<p>This error handling logic is encapsulated into shared helper functions and reused across API calls.<br>
+Individual API functions invoke these helpers rather than implementing error handling logic inline.</p>
+<p>When a network error occurs:</p>
+<ul>
+<li>a corresponding <strong>network error event</strong> is emitted,</li>
+<li>allowing upper layers to respond consistently through the event-driven system<br>
+(e.g., showing error messages, triggering retries, or switching UI states).</li>
+</ul>
+<hr>
+<h3 id="3210-main-structure--layer-10-tools">3.2.10 Main Structure — Layer 10: Tools</h3>
+<p>This layer contains one folder:</p>
+<ul>
+<li><code>utils/</code></li>
+</ul>
+<p>This folder provides shared utility tools that can be used across all layers of the application.</p>
+<p>One of the most important components in this layer is the <code>eventBus</code>, which serves as the central
+event-dispatching mechanism. All parts of the application emit events and register event handlers through the <code>eventBus</code>, enabling a consistent event-driven architecture.</p>
+<p>In addition to infrastructure-level utilities, this layer also includes lightweight computational
+helpers. For example, <code>calcOnlineUserScore.js</code> provides functions for calculating priority scores
+used to rank online users.</p>
+<hr>
+<h2 id="4-call-structure">4. Call Structure</h2>
+<h3 id="41-call-structure--introduction">4.1 Call Structure — Introduction</h3>
+<p>The main structure of the front-end is depicted in the graph below:</p>
+<p><img src="./images/2025-12-29_4_08_40.png" alt="front_end_call_graph"></p>
+<p>The diagram follows the conventions described in Section 2.</p>
+<p><strong>Future Improvement</strong></p>
+<p>To further improve architectural clarity, the dependency edge from <code>webPages/</code> to <code>call/</code> is planned to be removed.</p>
+<p>Currently, this dependency exists due to the presence of a call bootstrap file within the <code>call/</code> directory.<br>
+As a future refactoring, this bootstrap file should be relocated to the <code>webPageInit/</code> directory, where web page initialization logic is intended to reside.<br>
+This change is straightforward and requires minimal effort.</p>
+<hr>
+<h3 id="42-call-structure--layer-overview">4.2 Call Structure — Layer Overview</h3>
+<hr>
+<h3 id="421-call-structure--layer-1-web-pages">4.2.1 Call Structure — Layer 1: Web Pages</h3>
+<hr>
+<p><strong>Dynamic HTML</strong></p>
+<p>This has the same meaning as the <strong>Dynamic HTML</strong> introduced in section 3.2.1.</p>
+<hr>
+<h3 id="422-call-structure--layer-2-web-page-initialization">4.2.2 Call Structure — Layer 2: Web Page Initialization</h3>
+<hr>
+<p>The content of this layer is identical to that described in section 3.2.2.</p>
+<hr>
+<h3 id="423-call-structure--layer-3-call-core-and-orchestration">4.2.3 Call Structure — Layer 3: Call Core and Orchestration</h3>
+<hr>
+<p>This layer contains a single folder:</p>
+<ul>
+<li><code>call/</code></li>
+</ul>
+<p>The <code>call/</code> folder contains the core orchestration logic of the call system, including the definition and management of the call lifecycle.<br>
+Its main components are as follows:</p>
+<ul>
+<li>
+<p><code>controller.js</code><br>
+The entire call is modeled as an object. This file defines the corresponding class and provides an initialization function that creates a call engine instance and assigns it to a global variable (<code>callEngine</code>).</p>
+<p>During the entire call lifecycle, only a single <code>callEngine</code> instance is created and maintained. This instance serves as the central coordinator of the call system, encapsulating multiple state variables and methods that are responsible for managing call states, handling events, and orchestrating the complete lifecycle of a call from initialization to termination.The methods provided by the <code>callEngine</code> include handling WebRTC and WebSocket reconnections, as well as managing camera activation and deactivation, allowing reconnection and media control logic to be centralized within the call engine. WebSocket event handlers (e.g., connection, message, error, and close events such as <code>socket.onopen</code>, <code>socket.onmessage</code>, and <code>socket.onclose</code>) are registered and managed within this file.</p>
+</li>
+<li>
+<p><code>acceptCall_Bootstrap.js</code><br>
+Contains the bootstrap logic for handling incoming calls.</p>
+</li>
+<li>
+<p><code>makeCall_Bootstrap.js</code><br>
+Contains the bootstrap logic for initiating outgoing calls.</p>
+</li>
+<li>
+<p><code>peerEventRegister.js</code><br>
+Responsible for registering peer-related events of the WebRTC peer connection during a call session.<br>
+The corresponding event handlers delegate event processing to the <code>callEngine</code> methods defined in <code>controller.js</code>.</p>
+</li>
+</ul>
+<p>The internal dependencies within this directory are illustrated in the figure below.</p>
+<p><img src="./images/2025-12-30_6_22_18.png" alt="front_end_callFolder_graph"></p>
+<hr>
+<h3 id="424-call-structure--layer-4-call-interfaces--infrastructure">4.2.4 Call Structure — Layer 4: Call Interfaces &amp; Infrastructure</h3>
+<hr>
+<p>This layer contains three folders:</p>
+<ul>
+<li><code>call_ui/</code></li>
+<li><code>call_wss/</code></li>
+<li><code>rtc/</code></li>
+</ul>
+<p>This layer provides the interface and infrastructure components that support the call system, covering UI presentation, signaling transport, and real-time media communication.</p>
+<ul>
+<li>
+<p><code>call_ui/</code><br>
+Provides functions for updating the call-related user interface.<br>
+It is responsible only for UI rendering and visual updates.</p>
+</li>
+<li>
+<p><code>call_wss/</code><br>
+Provides functions for creating and managing WebSocket connections, as well as sending signaling messages required during the call process.</p>
+</li>
+<li>
+<p><code>rtc/</code><br>
+Contains <code>core.js</code>, <code>domVideo.js</code>, and <code>initializePeer.js</code>.<br>
+This folder is responsible for all WebRTC-related functionality, including peer connection creation, media stream handling, DOM binding for video elements, and WebRTC event wiring.</p>
+<ul>
+<li>
+<p><code>core.js</code><br>
+Provides low-level, DOM-independent WebRTC primitives.<br>
+This file defines helper functions for creating and managing <code>RTCPeerConnection</code> instances, acquiring local media streams, generating and setting SDP offers and answers, applying remote descriptions and ICE candidates, and tearing down peer connections.<br>
+It focuses purely on WebRTC core logic without coupling to UI elements or DOM identifiers.</p>
+</li>
+<li>
+<p><code>domVideo.js</code><br>
+Contains helper functions for binding media streams to DOM video elements.<br>
+This file is responsible for attaching and detaching local and remote media streams to corresponding video elements, handling safe playback, stopping and cleaning up existing streams, and managing basic UI-related behaviors such as visibility toggling and resize-triggered autoplay.<br>
+No WebRTC signaling or state management logic is implemented in this file.</p>
+</li>
+<li>
+<p><code>initializePeer.js</code><br>
+Responsible for binding WebRTC peer connection events to the internal event-driven system.<br>
+This file registers event handlers on the <code>RTCPeerConnection</code> instance (e.g., track events, ICE candidate generation, ICE connection state changes, and general connection state changes) and propagates these events through <code>callEventBus</code>, allowing higher-level components (such as the call engine) to react to WebRTC state changes without directly depending on WebRTC APIs.</p>
+</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h3 id="425-call-structure--layer-5-data-service">4.2.5 Call Structure — Layer 5: Data Service</h3>
+<hr>
+<p>The content of this layer is identical to that described in section 3.2.8.</p>
+<hr>
+<h3 id="426-call-structure--layer-6-api">4.2.6 Call Structure — Layer 6: API</h3>
+<hr>
+<p>The content of this layer is identical to that described in section 3.2.9.</p>
+<hr>
+<h3 id="427-call-structure--layer-7-tools">4.2.7 Call Structure — Layer 7: Tools</h3>
+<hr>
+<p>The content of this layer is identical to that described in section 3.2.10.</p>
+<p>For the call system, <code>callEventBus.js</code> in this layer is used to propagate call-related events across different components.</p>
+
+</body>
+</html>
