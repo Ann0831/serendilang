@@ -467,8 +467,6 @@ used to rank online users.
 ---
 
 
-
-
 # 3. Call Structure
 
 # 3.1 Call Structure — Introduction
@@ -481,6 +479,7 @@ The subgraph derived from Figure 2.1 highlights the key modules that participate
 ![front_end_call_core_graph](./images/2026-04-29-17-26.png)
 
 
+# 3.2 `call/` 
 
 The `call/` folder contains the core orchestration logic of the call system, including the definition and management of the call lifecycle.  
 Its main components are as follows:
@@ -506,30 +505,16 @@ Its main components are as follows:
 
 The internal dependencies within this directory are illustrated in the figure below.
 
-![front_end_callFolder_graph](./images/2025-12-30_6_22_18.png)
+![front_end_callFolder_graph](./images/2026-04-29-17-57.png)
 
 ---
 
-### 4.2.4 Call Structure — Layer 4: Call Interfaces & Infrastructure
----
+## 3.3 `call_wss/`
 
-This layer contains three folders:
-
-- `call_ui/`
-- `call_wss/`
-- `rtc/`
-
-This layer provides the interface and infrastructure components that support the call system, covering UI presentation, signaling transport, and real-time media communication.
-
-- `call_ui/`  
-  Provides functions for updating the call-related user interface.  
-  It is responsible only for UI rendering and visual updates.
-
-
-- `call_wss/`  
   Provides functions for creating and managing WebSocket connections, as well as sending signaling messages required during the call process.
 
-- `rtc/`  
+## 3.4 `rtc/`
+
   Contains `core.js`, `domVideo.js`, and `initializePeer.js`.  
   This folder is responsible for all WebRTC-related functionality, including peer connection creation, media stream handling, DOM binding for video elements, and WebRTC event wiring.
 

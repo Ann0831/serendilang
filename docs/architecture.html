@@ -730,6 +730,7 @@ This section focuses on the core modules involved in the call system.</p>
 <p>The call feature consists of components responsible for signaling, media handling, and real-time communication between users.<br>
 The subgraph derived from Figure 2.1 highlights the key modules that participate in establishing and maintaining a call session.
 <img src="./images/2026-04-29-17-26.png" alt="front_end_call_core_graph"></p>
+<h1 id="32-call">3.2 <code>call/</code></h1>
 <p>The <code>call/</code> folder contains the core orchestration logic of the call system, including the definition and management of the call lifecycle.<br>
 Its main components are as follows:</p>
 <ul>
@@ -753,30 +754,12 @@ The corresponding event handlers delegate event processing to the <code>callEngi
 </li>
 </ul>
 <p>The internal dependencies within this directory are illustrated in the figure below.</p>
-<p><img src="./images/2025-12-30_6_22_18.png" alt="front_end_callFolder_graph"></p>
+<p><img src="./images/2026-04-29-17-57.png" alt="front_end_callFolder_graph"></p>
 <hr>
-<h3 id="424-call-structure--layer-4-call-interfaces--infrastructure">4.2.4 Call Structure — Layer 4: Call Interfaces &amp; Infrastructure</h3>
-<hr>
-<p>This layer contains three folders:</p>
-<ul>
-<li><code>call_ui/</code></li>
-<li><code>call_wss/</code></li>
-<li><code>rtc/</code></li>
-</ul>
-<p>This layer provides the interface and infrastructure components that support the call system, covering UI presentation, signaling transport, and real-time media communication.</p>
-<ul>
-<li>
-<p><code>call_ui/</code><br>
-Provides functions for updating the call-related user interface.<br>
-It is responsible only for UI rendering and visual updates.</p>
-</li>
-<li>
-<p><code>call_wss/</code><br>
-Provides functions for creating and managing WebSocket connections, as well as sending signaling messages required during the call process.</p>
-</li>
-<li>
-<p><code>rtc/</code><br>
-Contains <code>core.js</code>, <code>domVideo.js</code>, and <code>initializePeer.js</code>.<br>
+<h2 id="33-call_wss">3.3 <code>call_wss/</code></h2>
+<p>Provides functions for creating and managing WebSocket connections, as well as sending signaling messages required during the call process.</p>
+<h2 id="34-rtc">3.4 <code>rtc/</code></h2>
+<p>Contains <code>core.js</code>, <code>domVideo.js</code>, and <code>initializePeer.js</code>.<br>
 This folder is responsible for all WebRTC-related functionality, including peer connection creation, media stream handling, DOM binding for video elements, and WebRTC event wiring.</p>
 <ul>
 <li>
@@ -795,8 +778,6 @@ No WebRTC signaling or state management logic is implemented in this file.</p>
 <p><code>initializePeer.js</code><br>
 Responsible for binding WebRTC peer connection events to the internal event-driven system.<br>
 This file registers event handlers on the <code>RTCPeerConnection</code> instance (e.g., track events, ICE candidate generation, ICE connection state changes, and general connection state changes) and propagates these events through <code>callEventBus</code>, allowing higher-level components (such as the call engine) to react to WebRTC state changes without directly depending on WebRTC APIs.</p>
-</li>
-</ul>
 </li>
 </ul>
 
