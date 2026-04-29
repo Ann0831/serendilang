@@ -167,7 +167,7 @@ export function useSubscribedState(id, fallback = {}) {
 All `.html` files for the application are centrally placed in the `webPages` directory.
 The diagram below illustrates the complete `js/jsx` system that is utilized by `webPages`.Each `.html` file within `webPages` primarily relies on an entry `.js` file located in `webPagesInit`.  This entry file serves as the initialization point, responsible for bootstrapping the corresponding page and connecting it to the underlying system architecture.
 
-![front_end_main_graph](./images/2026-04-28-15-55.png)
+![front_end_full_graph](./images/2026-04-29-11-13.png)
 
 In this diagram, each node represents a folder.
 
@@ -184,6 +184,9 @@ Therefore, dependencies only flow downward — folders positioned lower in the d
 
 This project includes voice and video call functionality.  
 If we exclude the call-related components and focus only on the core modules involved in standard website operation, the subgraph derived from Figure 2.1 is shown below:
+
+
+![front_end_main_structure_graph](./images/2026-04-29-11-18-28.png)
 
 
 

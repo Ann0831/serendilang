@@ -492,39 +492,16 @@ This allows non-UI modules to directly update the component’s hook state by ca
 <h3 id="21-overall-structure">2.1 Overall Structure</h3>
 <p>All <code>.html</code> files for the application are centrally placed in the <code>webPages</code> directory.
 The diagram below illustrates the complete <code>js/jsx</code> system that is utilized by <code>webPages</code>.Each <code>.html</code> file within <code>webPages</code> primarily relies on an entry <code>.js</code> file located in <code>webPagesInit</code>.  This entry file serves as the initialization point, responsible for bootstrapping the corresponding page and connecting it to the underlying system architecture.</p>
-<p><img src="./images/2026-04-28-15-55.png" alt="front_end_main_graph"></p>
+<p><img src="./images/2026-04-29-11-13.png" alt="front_end_full_graph"></p>
 <p>In this diagram, each node represents a folder.</p>
 <p>A directed edge from node A to node B indicates that <strong>at least one file in folder A depends on a file in folder B</strong>.
 The graph is topologically sorted.<br>
 Therefore, dependencies only flow downward — folders positioned lower in the diagram do not depend on those positioned above them.</p>
-<h3 id="structural-overview">Structural Overview</h3>
-<p>Based on this modeling approach, the front-end system is composed of two major structural parts:</p>
-<ul>
-<li><strong>Main Structure</strong></li>
-<li><strong>Call Structure</strong></li>
-</ul>
-<p>The <strong>Main Structure</strong> is responsible for the core functionality of the application, including page navigation, UI rendering, event handling, data flow, and user interaction logic.<br>
-It covers most user-facing features such as posts, chat rooms, profiles, and general UI state management.</p>
-<p>The <strong>Call Structure</strong> is dedicated to real-time voice and video communication.<br>
-It encapsulates call-related logic such as call state management, signaling, media handling, and real-time synchronization, and is designed to operate independently from the main UI flow while still integrating with the overall event-driven system.</p>
-<p>By separating the front-end into these two structures, the system maintains clear responsibility boundaries while remaining flexible enough to support real-time communication features without overloading the main application logic.</p>
 <hr>
-<h2 id="3-main-structure">3. Main Structure</h2>
-<h3 id="31-main-structure--introduction">3.1 Main Structure — Introduction</h3>
-<p>The main structure of the front-end is depicted in the graph below:</p>
-<p>The diagram follows the conventions described in Section 2.</p>
-<hr>
-<h3 id="32-main-structure--layer-overview">3.2 Main Structure — Layer Overview</h3>
-<p>The main structure of the front-end architecture is organized into ten layers with clearly defined responsibilities.<br>
-This layered design serves as the backbone of the system, providing modularity, predictable dependency flow, and long-term maintainability.</p>
-<hr>
-<h3 id="321-main-structure--layer-1-web-pages">3.2.1 Main Structure — Layer 1: Web Pages</h3>
-<p><strong>Folder:</strong> <code>webPages/</code></p>
-<p>This folder contains raw <code>.html</code> files that are directly accessible to users.</p>
-<p><strong>Dynamic HTML</strong></p>
-<p>In some cases, when a user visits a web page, the HTML returned by the backend is dynamically generated at runtime rather than served as a static file.<br>
-Such HTML responses are collectively referred to as <strong>Dynamic HTML</strong>.
-All dynamically generated HTML is carefully processed and sanitized to prevent injection attacks (e.g., XSS), ensuring that only validated and escaped content is rendered to the client.</p>
+<h2 id="22-main-structure">2.2 Main Structure</h2>
+<p>This project includes voice and video call functionality.<br>
+If we exclude the call-related components and focus only on the core modules involved in standard website operation, the subgraph derived from Figure 2.1 is shown below:</p>
+<p><img src="./images/2026-04-29-11-18-28.png" alt="front_end_main_structure_graph"></p>
 <hr>
 <h3 id="322-main-structure--layer-2-web-page-initialization">3.2.2 Main Structure — Layer 2: Web Page Initialization</h3>
 <p><strong>Folder:</strong> <code>webPageInit/</code></p>
