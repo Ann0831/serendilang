@@ -6,7 +6,13 @@ Serendilang is a language exchange social platform that supports real-time video
 Any user on the platform can initiate a call with another user, which introduces additional security and safety considerations at the system design level.
 
 At present, Serendilang is implemented as a web-based application.  
-The system is designed with extensibility in mind and can be further extended to mobile applications in the future.
+
+The remainder of this document is organized as follows:
+
+- **Section 1 (Introduction)** outlines the core architectural principles and provides an overview of the system.
+- **Section 2 (Detailed Description)** provides a detailed introduction to each module in the system.
+- **Section 3 (Call Structure)** focuses on the design of the video/voice call system.  
+- **Section 4 (Development & Testing Approach)** describes the concrete methods and workflows used for system development and testing.
 
 ---
 
