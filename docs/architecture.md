@@ -533,6 +533,72 @@ The internal dependencies within this directory are illustrated in the figure be
     This file registers event handlers on the `RTCPeerConnection` instance (e.g., track events, ICE candidate generation, ICE connection state changes, and general connection state changes) and propagates these events through `callEventBus`, allowing higher-level components (such as the call engine) to react to WebRTC state changes without directly depending on WebRTC APIs.
 
 
+# 4 Development & Testing Approach
 
+The front-end communicates with the server through both the Fetch API and WebSocket connections.
+
+As a full-stack developer, to simplify debugging and improve development convenience,  
+the front-end includes dedicated modules that simulate server-side behavior, including:
+
+- Mock implementations of Fetch API responses  
+- Simulated WebSocket communication  
+
+This allows the front-end to operate independently of the backend during development,  
+making it easier to test features, reproduce scenarios, and isolate issues without relying on a live server.
+
+## 4.1 WebSocket Mock Implementation
+
+![front_end_callFolder_graph](./images/2026-04-30-13-08.png)
+
+The diagram above illustrates the dependency structure within the `wss/` module.
+
+- The **orange node** represents `createFakeWss.js`, which is responsible for simulating WebSocket behavior.  
+- The **blue nodes** represent modules that depend on `createFakeWss.js`, utilizing the mock WebSocket interface.  
+- The **green nodes** represent modules that `createFakeWss.js` depends on.  
+
+This structure highlights how the mock WebSocket implementation is integrated into the system,  
+allowing dependent modules to interact with a simulated real-time communication layer during development and testing.
+
+
+Both `createFakeWss.js` and the production module `createVirtualWss.js` utilize `wssControll.js` for WebSocket event binding.
+
+Unlike `createVirtualWss.js`, which establishes a real WebSocket connection,  
+`createFakeWss.js` creates a simulated WebSocket object that does not perform actual network communication.  
+Instead, it emits predefined messages at configured time intervals—such as incoming call notifications or messages from other users—allowing controlled testing of real-time interaction scenarios.
+
+In addition to simulating message reception, `createFakeWss.js` also interacts with the mock data layer defined in `api/mock_db.js`.  
+When simulated events occur (e.g., receiving messages from other users), corresponding data is inserted into the mock database,  
+mimicking the side effects that would normally be handled by the backend.
+
+By sharing the same event-handling logic (`wssControll.js`) while decoupling the transport layer,  
+this design enables deterministic and reproducible testing of real-time features.  
+It allows the front-end to operate independently of the backend while maintaining behavior consistent with a real system.
+
+
+## 4.2 Fetch API Mock Implementation
+
+![front_end_callFolder_graph](./images/2026-04-30-15-09.png)
+
+The diagram above illustrates the overall structure of the `api/` module, with the mock-related components highlighted.
+
+- The **orange node** represents `mock_db.js`, which serves as an in-memory mock database.  
+- The **blue nodes** represent `api.mock.js` and `post_api.mock.js`, which implement mock API functions that interact with the mock database.  
+
+The mock API modules simulate server-side behavior by performing read and write operations on `mock_db.js`,  
+mimicking how real backend endpoints handle requests and return responses.
+
+- `api.mock.js` handles read operations from the mock database.  
+- `post_api.mock.js` handles write operations to the mock database.  
+
+The public interface of the `api/` module is exposed through `api.client.js` and `post_api.client.js`,  
+which abstract away whether the underlying implementation is real or mocked.
+
+By sharing the same interface between real and mock implementations, the system enables seamless switching  
+between development and production environments without affecting higher-level modules.
+
+Furthermore, `fakeApiErrorInjector.js` provides a mechanism for simulating server-side failures.
+
+By injecting controlled errors into API responses, it enables systematic testing of the application's  
+error handling logic, ensuring that failure cases are properly managed and reflected in the UI.
 
 

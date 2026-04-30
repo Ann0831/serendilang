@@ -780,6 +780,56 @@ Responsible for binding WebRTC peer connection events to the internal event-driv
 This file registers event handlers on the <code>RTCPeerConnection</code> instance (e.g., track events, ICE candidate generation, ICE connection state changes, and general connection state changes) and propagates these events through <code>callEventBus</code>, allowing higher-level components (such as the call engine) to react to WebRTC state changes without directly depending on WebRTC APIs.</p>
 </li>
 </ul>
+<h1 id="4-development--testing-approach">4 Development &amp; Testing Approach</h1>
+<p>The front-end communicates with the server through both the Fetch API and WebSocket connections.</p>
+<p>As a full-stack developer, to simplify debugging and improve development convenience,<br>
+the front-end includes dedicated modules that simulate server-side behavior, including:</p>
+<ul>
+<li>Mock implementations of Fetch API responses</li>
+<li>Simulated WebSocket communication</li>
+</ul>
+<p>This allows the front-end to operate independently of the backend during development,<br>
+making it easier to test features, reproduce scenarios, and isolate issues without relying on a live server.</p>
+<h2 id="41-websocket-mock-implementation">4.1 WebSocket Mock Implementation</h2>
+<p><img src="./images/2026-04-30-13-08.png" alt="front_end_callFolder_graph"></p>
+<p>The diagram above illustrates the dependency structure within the <code>wss/</code> module.</p>
+<ul>
+<li>The <strong>orange node</strong> represents <code>createFakeWss.js</code>, which is responsible for simulating WebSocket behavior.</li>
+<li>The <strong>blue nodes</strong> represent modules that depend on <code>createFakeWss.js</code>, utilizing the mock WebSocket interface.</li>
+<li>The <strong>green nodes</strong> represent modules that <code>createFakeWss.js</code> depends on.</li>
+</ul>
+<p>This structure highlights how the mock WebSocket implementation is integrated into the system,<br>
+allowing dependent modules to interact with a simulated real-time communication layer during development and testing.</p>
+<p>Both <code>createFakeWss.js</code> and the production module <code>createVirtualWss.js</code> utilize <code>wssControll.js</code> for WebSocket event binding.</p>
+<p>Unlike <code>createVirtualWss.js</code>, which establishes a real WebSocket connection,<br>
+<code>createFakeWss.js</code> creates a simulated WebSocket object that does not perform actual network communication.<br>
+Instead, it emits predefined messages at configured time intervals—such as incoming call notifications or messages from other users—allowing controlled testing of real-time interaction scenarios.</p>
+<p>In addition to simulating message reception, <code>createFakeWss.js</code> also interacts with the mock data layer defined in <code>api/mock_db.js</code>.<br>
+When simulated events occur (e.g., receiving messages from other users), corresponding data is inserted into the mock database,<br>
+mimicking the side effects that would normally be handled by the backend.</p>
+<p>By sharing the same event-handling logic (<code>wssControll.js</code>) while decoupling the transport layer,<br>
+this design enables deterministic and reproducible testing of real-time features.<br>
+It allows the front-end to operate independently of the backend while maintaining behavior consistent with a real system.</p>
+<h2 id="42-fetch-api-mock-implementation">4.2 Fetch API Mock Implementation</h2>
+<p><img src="./images/2026-04-30-15-09.png" alt="front_end_callFolder_graph"></p>
+<p>The diagram above illustrates the structure of the Fetch API mock system.</p>
+<ul>
+<li>The <strong>orange node</strong> represents <code>mock_db.js</code>, which serves as an in-memory mock database.</li>
+<li>The <strong>blue nodes</strong> represent <code>api.mock.js</code> and <code>post_api.mock.js</code>, which implement mock API functions that interact with the mock database.</li>
+</ul>
+<p>The mock API modules simulate server-side behavior by performing read and write operations on <code>mock_db.js</code>,<br>
+mimicking how real backend endpoints handle requests and return responses.</p>
+<ul>
+<li><code>api.mock.js</code> handles read operations from the mock database.</li>
+<li><code>post_api.mock.js</code> handles write operations to the mock database.</li>
+</ul>
+<p>The public interface of the <code>api/</code> module is exposed through <code>api.client.js</code> and <code>post_api.client.js</code>,<br>
+which abstract away whether the underlying implementation is real or mocked.</p>
+<p>By sharing the same interface between real and mock implementations, the system enables seamless switching<br>
+between development and production environments without affecting higher-level modules.</p>
+<p>Furthermore, <code>fakeApiErrorInjector.js</code> provides a mechanism for simulating server-side failures.</p>
+<p>By injecting controlled errors into API responses, it enables systematic testing of the application's<br>
+error handling logic, ensuring that failure cases are properly managed and reflected in the UI.</p>
 
 </body>
 </html>
