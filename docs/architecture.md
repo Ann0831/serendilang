@@ -367,7 +367,9 @@ Together, these modules separate connection management, coordination logic, and 
 
 This module forms part of the core architectural rationale introduced in **Section 1.3.2**.
 
-This module is responsible for managing all UI-related state and serves as the **single source of truth** for the front-end system.
+This module is responsible for managing all UI-related state and serves as the **source of truth** for the front-end system.
+
+It exposes a well-defined interface for state access and mutation, meaning that all read and write operations must be performed through its provided functions, rather than accessing the state directly.
 
 It leverages the **UI State Synchronization via Adapter** mechanism introduced in **Section 1.3.2** to propagate state changes to the UI layer, ensuring that rendering remains a consistent and deterministic mapping from system state.
 
