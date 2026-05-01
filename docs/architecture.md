@@ -310,6 +310,7 @@ The `wss/` folder contains three core modules, each responsible for a specific a
 
   This module exposes the `createVirtualWss` factory function, which creates a unified WebSocket-like interface shared across browser tabs.  
   The returned object behaves similarly to a native `WebSocket` instance from the perspective of upper layers, while internally coordinating leader–follower roles and inter-tab communication.
+  It acts as a wrapper that encapsulates the actual `WebSocket` instance, providing a consistent interface regardless of whether a real connection is used.
 
   Upon creation, each Virtual WSS instance:
   - Generates a unique tab identifier.
@@ -369,7 +370,7 @@ This module forms part of the core architectural rationale introduced in **Secti
 
 This module is responsible for managing all UI-related state and serves as the **source of truth** for the front-end system.
 
-It exposes a well-defined interface for state access and mutation, meaning that all read and write operations must be performed through its provided functions, rather than accessing the state directly.
+It exposes an interface for state access and mutation, meaning that all read and write operations must be performed through its provided functions, rather than accessing the state directly.
 
 It leverages the **UI State Synchronization via Adapter** mechanism introduced in **Section 1.3.2** to propagate state changes to the UI layer, ensuring that rendering remains a consistent and deterministic mapping from system state.
 
@@ -377,7 +378,7 @@ It leverages the **UI State Synchronization via Adapter** mechanism introduced i
 
 ---
 
-### 2.2.6 **`useSelfData/`** 
+### 2.2.6 **`userSelfData/`** 
 
 This module manages and provides access to data associated with the current user,  
 acting as a centralized interface for user-specific state within the system.
@@ -519,7 +520,14 @@ The internal dependencies within this directory are illustrated in the figure be
 
 ## 3.3 `call_wss/`
 
-  Provides functions for creating and managing WebSocket connections, as well as sending signaling messages required during the call process.
+Provides functions for creating and managing WebSocket connections, as well as sending signaling messages required during the call process.
+
+This module is a simplified version of the general `wss/` module described in Section 2.2.4.  
+Unlike `wss/`, it does not utilize the virtual WebSocket abstraction (`createVirtualWss.js`),  
+since each user can only participate in a single call session at a time.
+
+As a result, `call_wss/` is designed specifically for call-related communication,  
+providing a more streamlined and focused WebSocket implementation for signaling during calls.
 
 ## 3.4 `rtc/`
 
