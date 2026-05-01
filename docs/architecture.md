@@ -211,13 +211,7 @@ Each file in this directory handles the setup logic required when a page is load
 
 ### 2.2.2  **`event/`** 
 
-This module embodies the core architectural rationale introduced in **Section 1.3.1**.
-
-Its responsibilities include:
-
-- provide functions for registering event handlers
-- dispatching events through the global event bus (`utils/eventBus.js`)
-
+This module, together with `utils/eventBus.js`, embodies the core architectural rationale introduced in **Section 1.3.1**.
 **`eventEmitter.js`**
 
 This file attaches a global event listener to the entire document.
@@ -228,22 +222,22 @@ Every UI component that can trigger an event includes a `dataset.actionList` pro
 - the event name  
 - optional parameters  
 
-When a user interacts with the page (click, scroll, input, etc.), the listener reads `actionList` and emits appropriate events through the event bus.
+When a user interacts with the page (click, scroll, input, etc.), the listener reads the `actionList` and emits the corresponding events through the event bus.
 
-This creates a **declarative UI model** where components specify *what event should occur*, without knowing how it will be handled.
-
-
-**`handlers/` Subfolder**
-
-This subfolder contains all event handling modules.
-
-Each handler:
-
-1. imports the event bus  
-2. registers callbacks for specific event names via the event bus (`utils/eventBus.js`, Layer 10)
+This design allows any DOM element to emit events, even if it is not defined in `ui/`,  
+as long as it provides a valid `dataset.actionList`. For example, elements that are statically defined in `.html` files  
+(i.e., not managed by the React-based UI components) can still participate in the event system.
 
 
-This design keeps event emission and event handling cleanly separated.
+**`handlers/`**
+
+This folder (inside `event/`) contains modules that register event handlers using `utils/eventBus.js`.
+
+Registration here means binding event names to their corresponding handling logic within the event bus.  
+Through this process, each event is associated with a specific function that defines how the system should respond.
+
+
+
 
 ---
 ### 2.2.3  **`route/`** 
