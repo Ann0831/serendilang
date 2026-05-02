@@ -3,7 +3,6 @@
 # 1. Introduction
 
 Serendilang is a language exchange social platform that supports real-time video calls, text-based chat, post creation, likes, and friend connections.  
-Any user on the platform can initiate a call with another user, which introduces additional security and safety considerations at the system design level.
 
 At present, Serendilang is implemented as a web-based application.  
 
@@ -16,31 +15,32 @@ The remainder of this document is organized as follows:
 
 ---
 
-## 1.1 Platform Overview and Design Considerations
+## 1.1 System Complexity and Challenges
+As the platform evolves, Serendilang has grown into a system with significant complexity,  
+involving multiple interacting components and real-time features.
 
-Due to the open nature of user-to-user communication, Serendilang incorporates reporting and blocking mechanisms for end users, as well as administrative controls that allow moderators to ban users or remove posts that violate community guidelines.
+- The integration of WebRTC for peer-to-peer media communication (audio/video streaming) 
+- real-time communication (WebSocket-based messaging and call signaling)  
+- The need to coordinate asynchronous events across different parts of the system  
+- The management of UI state across multiple modules with consistent data flow  
+- The requirement to support development and testing without full backend dependency  
+- The handling of failure scenarios and ensuring robust error management  
 
-These requirements increase functional complexity in areas such as real-time communication, event handling, and state consistency.
+The system currently consists of over 25,000 lines of code, reflecting a substantial level of functional and architectural complexity.
+
+These challenges motivate the architectural decisions described in the following sections.
 
 ---
 
-## 1.2 System Complexity and Architectural Challenges
+## 1.2 Architectural Approach and Design Rationale
 
-The front-end system of Serendilang currently consists of approximately 20,000 lines of source code, reflecting the complexity of its real-time communication features, and user-facing interactions.
-
-Designing, maintaining, and preserving the scalability of such a system requires careful attention to system-level architecture, including clear separation of responsibilities, predictable execution flow, and long-term maintainability under continuous feature evolution.
-
----
-
-## 1.3 Architectural Approach and Design Rationale
-
-To address these challenges, the front-end system is built using **React**, along with **HTML**, **JavaScript (ES6 modules)**, and **TailwindCSS**, following a set of self-defined architectural conventions.
+To address these challenges, the front-end system is built using **React**, along with **HTML**, **JavaScript (ES6 modules)**, and **TailwindCSS**, following a set of self-defined architectural conventions. The project is bundled and served using **Vite**.
 
 ---
 
 ### Core Architectural Principles
 
-#### 1.3.1 State Machine–Driven Architecture
+#### 1.2.1 State Machine–Driven Architecture
 
 The front-end system is modeled as a **state machine**, where state transitions are triggered by:
 
@@ -81,7 +81,7 @@ UI components are kept lightweight and decoupled—they only detect user interac
 
 ---
 
-#### 1.3.2 Separation of System State and UI Rendering
+#### 1.2.2 Separation of System State and UI Rendering
 
 To maintain a clear separation of concerns, the system adopts an architecture where **UI component hook parameters are treated as derived copies of a subset of the system state**, rather than the source of truth.
 
@@ -211,7 +211,7 @@ Each file in this directory handles the setup logic required when a page is load
 
 ### 2.2.2  **`event/`** 
 
-This module, together with `utils/eventBus.js`, embodies the core architectural rationale introduced in **Section 1.3.1**.
+This module, together with `utils/eventBus.js`, embodies the core architectural rationale introduced in **Section 1.2.1**.
 **`eventEmitter.js`**
 
 This file attaches a global event listener to the entire document.
@@ -360,13 +360,13 @@ Together, these modules separate connection management, coordination logic, and 
 
 ### 2.2.5 **`pages/`** 
 
-This module forms part of the core architectural rationale introduced in **Section 1.3.2**.
+This module forms part of the core architectural rationale introduced in **Section 1.2.2**.
 
 This module is responsible for managing all UI-related state and serves as the **source of truth** for the front-end system.
 
 It exposes an interface for state access and mutation, meaning that all read and write operations must be performed through its provided functions, rather than accessing the state directly.
 
-It leverages the **UI State Synchronization via Adapter** mechanism introduced in **Section 1.3.2** to propagate state changes to the UI layer, ensuring that rendering remains a consistent and deterministic mapping from system state.
+It leverages the **UI State Synchronization via Adapter** mechanism introduced in **Section 1.2.2** to propagate state changes to the UI layer, ensuring that rendering remains a consistent and deterministic mapping from system state.
 
 
 
@@ -389,7 +389,7 @@ It serves as a centralized repository for cross-page or globally relevant data, 
 
 ### 2.2.8  **`ui/`** 
 
-This module forms part of the core architectural rationale introduced in **Section 1.3.2**.
+This module forms part of the core architectural rationale introduced in **Section 1.2.2**.
 
 It contains pure React-based UI components that are solely responsible for rendering.  
 These components do not handle business logic or state management, and instead rely on external state provided by the system.
