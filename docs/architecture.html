@@ -367,24 +367,35 @@ code {
   </script>
 <h1 id="front-end-system-overview">Front-End System Overview</h1>
 <h1 id="1-introduction">1. Introduction</h1>
-<p>Serendilang is a language exchange social platform that supports real-time video calls, text-based chat, post creation, likes, and friend connections.<br>
-Any user on the platform can initiate a call with another user, which introduces additional security and safety considerations at the system design level.</p>
-<p>At present, Serendilang is implemented as a web-based application.<br>
-The system is designed with extensibility in mind and can be further extended to mobile applications in the future.</p>
+<p>Serendilang is a language exchange social platform that supports real-time video calls, text-based chat, post creation, likes, and friend connections.</p>
+<p>At present, Serendilang is implemented as a web-based application.</p>
+<p>The remainder of this document is organized as follows:</p>
+<ul>
+<li><strong>Section 1 (Introduction)</strong> outlines the core architectural principles and provides an overview of the system.</li>
+<li><strong>Section 2 (Detailed Description)</strong> provides a detailed introduction to each module in the system.</li>
+<li><strong>Section 3 (Call Structure)</strong> focuses on the design of the video/voice call system.</li>
+<li><strong>Section 4 (Development &amp; Testing Approach)</strong> describes the concrete methods and workflows used for system development and testing.</li>
+</ul>
 <hr>
-<h2 id="11-platform-overview-and-design-considerations">1.1 Platform Overview and Design Considerations</h2>
-<p>Due to the open nature of user-to-user communication, Serendilang incorporates reporting and blocking mechanisms for end users, as well as administrative controls that allow moderators to ban users or remove posts that violate community guidelines.</p>
-<p>These requirements increase functional complexity in areas such as real-time communication, event handling, and state consistency.</p>
+<h2 id="11-system-complexity-and-challenges">1.1 System Complexity and Challenges</h2>
+<p>As the platform evolves, Serendilang has grown into a system with significant complexity,<br>
+involving multiple interacting components and real-time features.</p>
+<ul>
+<li>The integration of WebRTC for peer-to-peer media communication (audio/video streaming)</li>
+<li>real-time communication (WebSocket-based messaging and call signaling)</li>
+<li>The need to coordinate asynchronous events across different parts of the system</li>
+<li>The management of UI state across multiple modules with consistent data flow</li>
+<li>The requirement to support development and testing without full backend dependency</li>
+<li>The handling of failure scenarios and ensuring robust error management</li>
+</ul>
+<p>The system currently consists of over 25,000 lines of code, reflecting a substantial level of functional and architectural complexity.</p>
+<p>These challenges motivate the architectural decisions described in the following sections.</p>
 <hr>
-<h2 id="12-system-complexity-and-architectural-challenges">1.2 System Complexity and Architectural Challenges</h2>
-<p>The front-end system of Serendilang currently consists of approximately 20,000 lines of source code, reflecting the complexity of its real-time communication features, and user-facing interactions.</p>
-<p>Designing, maintaining, and preserving the scalability of such a system requires careful attention to system-level architecture, including clear separation of responsibilities, predictable execution flow, and long-term maintainability under continuous feature evolution.</p>
-<hr>
-<h2 id="13-architectural-approach-and-design-rationale">1.3 Architectural Approach and Design Rationale</h2>
-<p>To address these challenges, the front-end system is built using <strong>React</strong>, along with <strong>HTML</strong>, <strong>JavaScript (ES6 modules)</strong>, and <strong>TailwindCSS</strong>, following a set of self-defined architectural conventions.</p>
+<h2 id="12-architectural-approach-and-design-rationale">1.2 Architectural Approach and Design Rationale</h2>
+<p>To address these challenges, the front-end system is built using <strong>React</strong>, along with <strong>HTML</strong>, <strong>JavaScript (ES6 modules)</strong>, and <strong>TailwindCSS</strong>, following a set of self-defined architectural conventions. The project is bundled and served using <strong>Vite</strong>.</p>
 <hr>
 <h3 id="core-architectural-principles">Core Architectural Principles</h3>
-<h4 id="131-state-machinedriven-architecture">1.3.1 State Machine–Driven Architecture</h4>
+<h4 id="121-state-machinedriven-architecture">1.2.1 State Machine–Driven Architecture</h4>
 <p>The front-end system is modeled as a <strong>state machine</strong>, where state transitions are triggered by:</p>
 <ul>
 <li><strong>User interactions</strong> (e.g., UI events)</li>
@@ -416,7 +427,7 @@ The system is designed with extensibility in mind and can be further extended to
 <p>During application initialization, all relevant events are registered and mapped to their corresponding handlers.</p>
 <p>UI components are kept lightweight and decoupled—they only detect user interactions and emit events via <code>eventBus.emit(...)</code>, without directly handling business logic.</p>
 <hr>
-<h4 id="132-separation-of-system-state-and-ui-rendering">1.3.2 Separation of System State and UI Rendering</h4>
+<h4 id="122-separation-of-system-state-and-ui-rendering">1.2.2 Separation of System State and UI Rendering</h4>
 <p>To maintain a clear separation of concerns, the system adopts an architecture where <strong>UI component hook parameters are treated as derived copies of a subset of the system state</strong>, rather than the source of truth.</p>
 <p>In this design, all UI-related state is maintained in a centralized system layer outside of React components.<br>
 The hook parameters inside each UI component act only as <strong>synchronized snapshots</strong> of that state.</p>
@@ -509,13 +520,8 @@ It can be considered as the <strong>entry point for each web page</strong>.</p>
 <p>Each file in this directory handles the setup logic required when a page is loaded.</p>
 <hr>
 <h3 id="222--event">2.2.2  <strong><code>event/</code></strong></h3>
-<p>This module embodies the core architectural rationale introduced in <strong>Section 1.3.1</strong>.</p>
-<p>Its responsibilities include:</p>
-<ul>
-<li>provide functions for registering event handlers</li>
-<li>dispatching events through the global event bus (<code>utils/eventBus.js</code>)</li>
-</ul>
-<p><strong><code>eventEmitter.js</code></strong></p>
+<p>This module, together with <code>utils/eventBus.js</code>, embodies the core architectural rationale introduced in <strong>Section 1.2.1</strong>.
+<strong><code>eventEmitter.js</code></strong></p>
 <p>This file attaches a global event listener to the entire document.</p>
 <p>Every UI component that can trigger an event includes a <code>dataset.actionList</code> property—an array of action objects describing:</p>
 <ul>
@@ -523,16 +529,14 @@ It can be considered as the <strong>entry point for each web page</strong>.</p>
 <li>the event name</li>
 <li>optional parameters</li>
 </ul>
-<p>When a user interacts with the page (click, scroll, input, etc.), the listener reads <code>actionList</code> and emits appropriate events through the event bus.</p>
-<p>This creates a <strong>declarative UI model</strong> where components specify <em>what event should occur</em>, without knowing how it will be handled.</p>
-<p><strong><code>handlers/</code> Subfolder</strong></p>
-<p>This subfolder contains all event handling modules.</p>
-<p>Each handler:</p>
-<ol>
-<li>imports the event bus</li>
-<li>registers callbacks for specific event names via the event bus (<code>utils/eventBus.js</code>, Layer 10)</li>
-</ol>
-<p>This design keeps event emission and event handling cleanly separated.</p>
+<p>When a user interacts with the page (click, scroll, input, etc.), the listener reads the <code>actionList</code> and emits the corresponding events through the event bus.</p>
+<p>This design allows any DOM element to emit events, even if it is not defined in <code>ui/</code>,<br>
+as long as it provides a valid <code>dataset.actionList</code>. For example, elements that are statically defined in <code>.html</code> files<br>
+(i.e., not managed by the React-based UI components) can still participate in the event system.</p>
+<p><strong><code>handlers/</code></strong></p>
+<p>This folder (inside <code>event/</code>) contains modules that register event handlers using <code>utils/eventBus.js</code>.</p>
+<p>Registration here means binding event names to their corresponding handling logic within the event bus.<br>
+Through this process, each event is associated with a specific function that defines how the system should respond.</p>
 <hr>
 <h3 id="223--route">2.2.3  <strong><code>route/</code></strong></h3>
 <p>for the main web page, there are a menu and pages, when user touches a menu button, the main screen switch to the page that it refers.
@@ -598,7 +602,8 @@ The Virtual WSS is not a native <code>WebSocket</code> instance created via <cod
 <p><strong><code>createVirtualWss.js</code></strong><br>
 Responsible for constructing the Virtual WebSocket abstraction (<em>Virtual WSS</em>).</p>
 <p>This module exposes the <code>createVirtualWss</code> factory function, which creates a unified WebSocket-like interface shared across browser tabs.<br>
-The returned object behaves similarly to a native <code>WebSocket</code> instance from the perspective of upper layers, while internally coordinating leader–follower roles and inter-tab communication.</p>
+The returned object behaves similarly to a native <code>WebSocket</code> instance from the perspective of upper layers, while internally coordinating leader–follower roles and inter-tab communication.
+It acts as a wrapper that encapsulates the actual <code>WebSocket</code> instance, providing a consistent interface regardless of whether a real connection is used.</p>
 <p>Upon creation, each Virtual WSS instance:</p>
 <ul>
 <li>Generates a unique tab identifier.</li>
@@ -656,11 +661,12 @@ Works well for messaging, notifications, and voice/video call signaling.</p>
 </ul>
 <hr>
 <h3 id="225-pages">2.2.5 <strong><code>pages/</code></strong></h3>
-<p>This module forms part of the core architectural rationale introduced in <strong>Section 1.3.2</strong>.</p>
-<p>This module is responsible for managing all UI-related state and serves as the <strong>single source of truth</strong> for the front-end system.</p>
-<p>It leverages the <strong>UI State Synchronization via Adapter</strong> mechanism introduced in <strong>Section 1.3.2</strong> to propagate state changes to the UI layer, ensuring that rendering remains a consistent and deterministic mapping from system state.</p>
+<p>This module forms part of the core architectural rationale introduced in <strong>Section 1.2.2</strong>.</p>
+<p>This module is responsible for managing all UI-related state and serves as the <strong>source of truth</strong> for the front-end system.</p>
+<p>It exposes an interface for state access and mutation, meaning that all read and write operations must be performed through its provided functions, rather than accessing the state directly.</p>
+<p>It leverages the <strong>UI State Synchronization via Adapter</strong> mechanism introduced in <strong>Section 1.2.2</strong> to propagate state changes to the UI layer, ensuring that rendering remains a consistent and deterministic mapping from system state.</p>
 <hr>
-<h3 id="226-useselfdata">2.2.6 <strong><code>useSelfData/</code></strong></h3>
+<h3 id="226-userselfdata">2.2.6 <strong><code>userSelfData/</code></strong></h3>
 <p>This module manages and provides access to data associated with the current user,<br>
 acting as a centralized interface for user-specific state within the system.</p>
 <hr>
@@ -669,7 +675,7 @@ acting as a centralized interface for user-specific state within the system.</p>
 <p>It serves as a centralized repository for cross-page or globally relevant data, such as the online user list, ensuring consistency and avoiding redundant state duplication.</p>
 <hr>
 <h3 id="228--ui">2.2.8  <strong><code>ui/</code></strong></h3>
-<p>This module forms part of the core architectural rationale introduced in <strong>Section 1.3.2</strong>.</p>
+<p>This module forms part of the core architectural rationale introduced in <strong>Section 1.2.2</strong>.</p>
 <p>It contains pure React-based UI components that are solely responsible for rendering.<br>
 These components do not handle business logic or state management, and instead rely on external state provided by the system.</p>
 <hr>
@@ -758,6 +764,11 @@ The corresponding event handlers delegate event processing to the <code>callEngi
 <hr>
 <h2 id="33-call_wss">3.3 <code>call_wss/</code></h2>
 <p>Provides functions for creating and managing WebSocket connections, as well as sending signaling messages required during the call process.</p>
+<p>This module is a simplified version of the general <code>wss/</code> module described in Section 2.2.4.<br>
+Unlike <code>wss/</code>, it does not utilize the virtual WebSocket abstraction (<code>createVirtualWss.js</code>),<br>
+since each user can only participate in a single call session at a time.</p>
+<p>As a result, <code>call_wss/</code> is designed specifically for call-related communication,<br>
+providing a more streamlined and focused WebSocket implementation for signaling during calls.</p>
 <h2 id="34-rtc">3.4 <code>rtc/</code></h2>
 <p>Contains <code>core.js</code>, <code>domVideo.js</code>, and <code>initializePeer.js</code>.<br>
 This folder is responsible for all WebRTC-related functionality, including peer connection creation, media stream handling, DOM binding for video elements, and WebRTC event wiring.</p>
@@ -812,7 +823,7 @@ this design enables deterministic and reproducible testing of real-time features
 It allows the front-end to operate independently of the backend while maintaining behavior consistent with a real system.</p>
 <h2 id="42-fetch-api-mock-implementation">4.2 Fetch API Mock Implementation</h2>
 <p><img src="./images/2026-04-30-15-09.png" alt="front_end_callFolder_graph"></p>
-<p>The diagram above illustrates the structure of the Fetch API mock system.</p>
+<p>The diagram above illustrates the overall structure of the <code>api/</code> module, with the mock-related components highlighted.</p>
 <ul>
 <li>The <strong>orange node</strong> represents <code>mock_db.js</code>, which serves as an in-memory mock database.</li>
 <li>The <strong>blue nodes</strong> represent <code>api.mock.js</code> and <code>post_api.mock.js</code>, which implement mock API functions that interact with the mock database.</li>
